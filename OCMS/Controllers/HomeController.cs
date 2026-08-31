@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OCMS.Models;
+using OCMS.Entities;
 using System.Diagnostics;
 
 namespace OCMS.Controllers

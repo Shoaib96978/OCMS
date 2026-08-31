@@ -1,4 +1,4 @@
-namespace OCMS.Models
+namespace OCMS.Entities
 {
     public class ErrorViewModel
     {
