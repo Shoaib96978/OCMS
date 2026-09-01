@@ -7,7 +7,7 @@ namespace OCMS.Entities
     {
         [Key]
         public Guid UserRoleId { get; set; } = Guid.NewGuid();
-        public UserRoles Role { get; set; }
+        public AppRoles Role { get; set; }
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;
     }

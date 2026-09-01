@@ -1,6 +1,6 @@
 ﻿namespace OCMS.Shared.Enums
 {
-    public enum UserRoles
+    public enum AppRoles
     {
         Admin,
         User,
