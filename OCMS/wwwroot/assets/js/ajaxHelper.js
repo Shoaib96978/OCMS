@@ -103,7 +103,11 @@ const OCMS = (function ($) {
         if (buttonEl) {
             buttonEl.disabled = true;
             buttonEl.dataset.original = buttonEl.innerHTML;
-            buttonEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait...';
+            buttonEl.style.minWidth = buttonEl.offsetWidth + 'px';   // lock width so it doesn't shrink
+            buttonEl.innerHTML = `
+            <span class="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true"></span>
+            <span>Please wait...</span>
+        `;
         }
 
         $.ajax({
@@ -143,6 +147,7 @@ const OCMS = (function ($) {
                 if (buttonEl) {
                     buttonEl.disabled = false;
                     buttonEl.innerHTML = buttonEl.dataset.original;
+                    buttonEl.style.minWidth = '';   
                 }
             }
         });
@@ -157,44 +162,47 @@ const OCMS = (function ($) {
         document.querySelector('.ajax-toast')?.remove();
 
         const styles = {
-            success: { background: '#741f9e', icon: 'fa-circle-check' },
-            danger: { background: '#b53e20', icon: 'fa-circle-xmark' },
-            warning: { background: '#3a7ca5', icon: 'fa-triangle-exclamation' }
+            success: { background: '#16a34a', icon: 'bi-check-circle-fill' },
+            danger: { background: '#dc2626', icon: 'bi-x-circle-fill' },
+            warning: { background: '#d97706', icon: 'bi-exclamation-triangle-fill' },
+            info: { background: '#0891b2', icon: 'bi-info-circle-fill' }
         };
 
         const style = styles[type] || styles.success;
 
         const toast = `
-        <div class="ajax-toast" style="
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            background: ${style.background};
-            color: white;
-            padding: 14px 20px;
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            min-width: 250px;
-            animation: slideIn 0.3s ease;
-        ">
-            <i class="fas ${style.icon}" style="font-size: 18px;"></i>
-            <span>${message}</span>
-        </div>`;
+    <div class="ajax-toast" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        background: #fff;
+        color: #0f172a;
+        padding: 14px 18px;
+        border-radius: 10px;
+        border-left: 4px solid ${style.background};
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        min-width: 260px;
+        max-width: 380px;
+        animation: slideIn 0.3s ease;
+    ">
+        <i class="bi ${style.icon}" style="font-size: 18px; color: ${style.background};"></i>
+        <span style="flex:1;">${message}</span>
+    </div>`;
 
         // Inject keyframes only once
         if (!document.getElementById('ajax-toast-keyframes')) {
             const styleTag = document.createElement('style');
             styleTag.id = 'ajax-toast-keyframes';
             styleTag.textContent = `
-            @keyframes slideIn  { from { opacity:0; transform:translateX(50px); } to { opacity:1; transform:translateX(0); } }
-            @keyframes slideOut { from { opacity:1; transform:translateX(0); }    to { opacity:0; transform:translateX(50px); } }
-        `;
+        @keyframes slideIn  { from { opacity:0; transform:translateX(50px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes slideOut { from { opacity:1; transform:translateX(0); }    to { opacity:0; transform:translateX(50px); } }
+    `;
             document.head.appendChild(styleTag);
         }
 
