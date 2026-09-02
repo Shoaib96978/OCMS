@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "RegisterPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="auth-wrapper" style="padding:50px 16px;">
+    <div class="auth-card" style="max-width:520px;">
+        <div class="auth-logo"><i class="bi bi-shield-check"></i> OCMS</div>
+        <h2>Create Account</h2>
+        <p class="auth-sub">Join OCMS — file and track complaints with ease</p>
+
+        <form id="register-form" novalidate>
+            <div class="col-sm-6">
+                <div class="ocms-form-group mb-0">
+                    <label class="ocms-label">Full Name <span class="req">*</span></label>
+                    <input type="text" name="FullName" id="fullname" class="ocms-input" placeholder="Ali Khan" required>
+                    <span class="ocms-error-msg"></span>
+                </div>
+            </div>
+               
+
+            <div class="ocms-form-group mt-3">
+                <label class="ocms-label">Email Address <span class="req">*</span></label>
+                <div class="position-relative">
+                    <i class="bi bi-envelope" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.9rem;"></i>
+                    <input type="email" name="Email" id="email" class="ocms-input" style="padding-left:38px;" placeholder="you@example.com" required>
+                </div>
+                <span class="ocms-error-msg"></span>
+            </div>
+
+            <div class="ocms-form-group">
+                <label class="ocms-label">Password <span class="req">*</span></label>
+                <div class="position-relative">
+                    <i class="bi bi-lock" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.9rem;"></i>
+                    <input type="password" name="Password" id="password" class="ocms-input" style="padding-left:38px;padding-right:40px;" placeholder="Min. 8 characters" required>
+                    <button type="button" class="toggle-pw btn border-0 p-0" data-target="password"
+                            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <div id="pwd-strength" class="mt-2" style="display:none;">
+                    <div class="progress" style="height:4px;border-radius:4px;">
+                        <div id="strength-bar" class="progress-bar" style="width:0;transition:width .3s;"></div>
+                    </div>
+                    <small id="strength-label" class="text-muted" style="font-size:.75rem;"></small>
+                </div>
+                <span class="ocms-error-msg"></span>
+            </div>
+
+            <div class="ocms-form-group">
+                <label class="ocms-label">Confirm Password <span class="req">*</span></label>
+                <div class="position-relative">
+                    <i class="bi bi-lock-fill" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.9rem;"></i>
+                    <input type="password" name="ConfirmPassowrd" id="confirmPassword" class="ocms-input" style="padding-left:38px;padding-right:40px;" placeholder="Repeat your password" required>
+                    <button type="button" class="toggle-pw btn border-0 p-0" data-target="confirmPassword"
+                            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span class="ocms-error-msg"></span>
+            </div>
+
+            <div class="d-flex align-items-start gap-2 mb-4">
+                <input type="checkbox" id="agree" class="form-check-input m-0 mt-1" style="width:16px;height:16px;" required>
+                <label for="agree" style="font-size:.82rem;color:var(--text-muted);cursor:pointer;">
+                    I agree to the <a href="#" style="color:var(--primary);">Terms of Service</a> and
+                    <a href="#" style="color:var(--primary);">Privacy Policy</a>
+                </label>
+            </div>
+            <span id="agree-error" class="ocms-error-msg d-block" style="margin-top:-12px;margin-bottom:12px;"></span>
+
+            <button type="submit" id="register-btn" class="btn-primary-ocms w-100 justify-content-center">
+                <i class="bi bi-person-plus"></i> Create Account
+            </button>
+        </form>
+
+        <p class="text-center mt-4" style="font-size:.84rem;color:var(--text-muted);">
+            Already have an account? <a href=";Auth/LoginPage" style="color:var(--primary);font-weight:600;">Sign In</a>
+        </p>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/assets/js/auth.js"></script>
+
+    <script>
+        $(function () {
+
+            // Password toggle
+            $('.toggle-pw').on('click', function () {
+                const target = $(this).data('target');
+                const $inp   = $('#' + target);
+                const isText = $inp.attr('type') === 'text';
+                $inp.attr('type', isText ? 'password' : 'text');
+                $(this).find('i').toggleClass('bi-eye bi-eye-slash');
+            });
+
+            // Password strength
+            $('#password').on('input', function () {
+                const val = $(this).val();
+                if (!val) { $('#pwd-strength').hide(); return; }
+                $('#pwd-strength').show();
+                let score = 0;
+                if (val.length >= 8)          score++;
+                if (/[A-Z]/.test(val))        score++;
+                if (/[0-9]/.test(val))        score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
+                const colors = ['#ef4444','#f97316','#eab308','#16a34a'];
+                const labels = ['Weak','Fair','Good','Strong'];
+                $('#strength-bar').css({ width: (score * 25) + '%', background: colors[score - 1] || '#ef4444' });
+                $('#strength-label').text(labels[score - 1] || '').css('color', colors[score - 1] || '#ef4444');
+            });
+
+            // Submit — clean, single handler
+            $('#register-form').on('submit', function (e) {
+                e.preventDefault();
+
+                // Terms checkbox
+                if (!$('#agree').is(':checked')) {
+                    $('#agree-error').text('You must agree to the terms.');
+                    return;
+                } else {
+                    $('#agree-error').text('');
+                }
+
+                // Password match
+                if ($('#password').val() !== $('#confirmPassword').val()) {
+                    $('#confirmPassword').next('.ocms-error-msg').text('Passwords do not match.');
+                    return;
+                }
+
+                const formData = new FormData(this);
+                const btn      = document.getElementById('register-btn');
+                ajaxPostForm('/Auth/Register', formData, btn);
+            });
+
+        });
+    </script>
+}
