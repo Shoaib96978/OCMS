@@ -1,0 +1,223 @@
+﻿@{
+    ViewData["Title"] = "Track Complaint";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="py-5"> 
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- Search box -->
+        <div class="ocms-card mb-4">
+          <div class="card-body-ocms">
+            <h6 class="fw-700 mb-3" style="font-size:.95rem;"><i class="bi bi-search me-2 text-primary"></i>Enter Complaint ID</h6>
+            <form id="track-form" novalidate>
+              <div class="d-flex gap-2">
+                <div class="flex-fill position-relative">
+                  <i class="bi bi-hash" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);"></i>
+                  <input type="text" id="complaint-id" class="ocms-input" style="padding-left:36px;" placeholder="e.g. OCMS-4821" required>
+                </div>
+                <button type="submit" id="track-btn" class="btn-primary-ocms" style="white-space:nowrap;">
+                  <i class="bi bi-search"></i> Track
+                </button>
+              </div>
+              <span class="ocms-error-msg" id="track-error"></span>
+            </form>
+          </div>
+        </div>
+
+        <!-- Result card (static demo — populated by AJAX in real usage) -->
+        <div class="track-result-card" id="result-card">
+          <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
+            <div>
+              <p class="text-muted mb-1" style="font-size:.78rem;">Complaint ID</p>
+              <h5 class="fw-700 mb-0" id="res-id">OCMS-4821</h5>
+            </div>
+            <span class="badge-ocms badge-progress" id="res-status">In Progress</span>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <p class="text-muted mb-1" style="font-size:.75rem;">Title</p>
+              <p class="fw-600 mb-0" style="font-size:.9rem;" id="res-title">Water Supply Interrupted</p>
+            </div>
+            <div class="col-sm-6">
+              <p class="text-muted mb-1" style="font-size:.75rem;">Category</p>
+              <p class="fw-600 mb-0" style="font-size:.9rem;" id="res-category">Service</p>
+            </div>
+            <div class="col-sm-6">
+              <p class="text-muted mb-1" style="font-size:.75rem;">Submitted On</p>
+              <p class="fw-600 mb-0" style="font-size:.9rem;" id="res-date">Jan 10, 2025</p>
+            </div>
+            <div class="col-sm-6">
+              <p class="text-muted mb-1" style="font-size:.75rem;">Last Updated</p>
+              <p class="fw-600 mb-0" style="font-size:.9rem;" id="res-updated">Jan 12, 2025</p>
+            </div>
+          </div>
+
+          <hr>
+          <h6 class="fw-700 mb-3" style="font-size:.88rem;"><i class="bi bi-clock-history me-2 text-primary"></i>Progress Timeline</h6>
+
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot done"></div>
+              <h6>Complaint Received</h6>
+              <span>Jan 10, 2025 · 09:42 AM</span>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot done"></div>
+              <h6>Assigned to Department</h6>
+              <span>Jan 11, 2025 · 10:00 AM — Water &amp; Sanitation Dept.</span>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <h6>Under Investigation</h6>
+              <span>Currently in progress…</span>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot pend"></div>
+              <h6 class="text-muted">Resolution</h6>
+              <span>Pending</span>
+            </div>
+          </div>
+
+          <div class="mt-4 p-3 rounded-3" style="background:#f8fafc;border:1px solid var(--border);">
+            <p class="mb-1" style="font-size:.8rem;color:var(--text-muted);font-weight:600;">Admin Remark</p>
+            <p class="mb-0" style="font-size:.85rem;" id="res-remark">Field team dispatched. Issue is being investigated and will be resolved within 48 hours.</p>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="text-center py-5 d-none">
+          <i class="bi bi-search fs-1 text-muted mb-3 d-block opacity-50"></i>
+          <h6 class="fw-700">No Complaint Found</h6>
+          <p class="text-muted" style="font-size:.88rem;">No complaint matches the ID you entered. Please check and try again.</p>
+          <a href="/Complaint/Submit" class="btn-primary-ocms mt-2 d-inline-flex">
+            <i class="bi bi-send"></i> Submit a Complaint
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="ocms-card mb-3">
+          <div class="card-body-ocms">
+            <h6 class="fw-700 mb-3" style="font-size:.9rem;"><i class="bi bi-info-circle me-2 text-primary"></i>Status Legend</h6>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge-ocms badge-pending">Pending</span>
+                <small class="text-muted">Waiting for assignment</small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge-ocms badge-progress">In Progress</span>
+                <small class="text-muted">Being actively worked on</small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge-ocms badge-resolved">Resolved</span>
+                <small class="text-muted">Successfully resolved</small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge-ocms badge-rejected">Rejected</span>
+                <small class="text-muted">Could not be processed</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ocms-card">
+          <div class="card-body-ocms">
+            <h6 class="fw-700 mb-2" style="font-size:.9rem;"><i class="bi bi-question-circle me-2 text-warning"></i>Can't find your ID?</h6>
+            <p class="text-muted mb-3" style="font-size:.82rem;">Your Complaint ID was sent to your email when you submitted. Check your inbox or spam folder.</p>
+            <a href="contact.html" class="btn-outline-ocms" style="font-size:.82rem;padding:7px 16px;">
+              <i class="bi bi-headset"></i> Contact Support
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const $form = $('#track-form');
+            const $btn = $('#track-btn');
+            const $resultCard = $('#result-card');
+            const $emptyState = $('#empty-state');
+
+            // Hide result card on load until searched
+            $resultCard.addClass('d-none');
+
+            $form.on('submit', function (e) {
+                e.preventDefault();
+                
+                const rawId = $('#complaint-id').val().trim();
+                if (!rawId) return;
+
+                // Prepare loading state
+                $btn.prop('disabled', true);
+                const originalHtml = $btn.html();
+                $btn.html('<i class="fas fa-spinner fa-spin"></i>');
+                
+                $resultCard.addClass('d-none');
+                $emptyState.addClass('d-none');
+
+                // Using GET as per your backend controller requirement
+                $.ajax({
+                    url: `/Complaint/TrackById?trackId=${rawId}`,
+                    type: 'GET',
+                    success: function (response) {
+                        // response follows your AppResponse class structure
+                        if (response.success && response.data) {
+                            populateResult(response.data);
+                            $resultCard.removeClass('d-none');
+                        } else {
+                            $emptyState.removeClass('d-none');
+                            OCMS.showToast(response.message || "Complaint not found", "warning");
+                        }
+                    },
+                    error: function () {
+                        OCMS.showToast("Server error occurred", "danger");
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false);
+                        $btn.html(originalHtml);
+                    }
+                });
+            });
+
+            function populateResult(data) {
+                // Mapping your backend properties to the new UI IDs
+                $('#res-id').text(data.trackId);
+                $('#res-title').text(data.title);
+                $('#res-category').text(data.categoryName);
+                $('#res-date').text(new Date(data.submissionDate).toLocaleDateString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                }));
+                $('#res-updated').text(data.lastUpdated ? new Date(data.lastUpdated).toLocaleDateString('en-GB') : 'N/A');
+                $('#res-remark').text(data.adminRemark || "No remarks yet.");
+
+                // Status Badge Logic
+                const statusEl = $('#res-status');
+                statusEl.text(getStatusText(data.status));
+                statusEl.attr('class', 'badge-ocms ' + getStatusClass(data.status));
+                
+                // Note: If you want to build the timeline dynamically,
+                // you would loop through data.Logs or data.History here.
+            }
+
+            function getStatusText(status) {
+                const texts = { 0: 'Pending', 1: 'In Progress', 2: 'Resolved', 3: 'Rejected' };
+                return texts[status] || 'Unknown';
+            }
+
+            function getStatusClass(status) {
+                const classes = { 0: 'badge-pending', 1: 'badge-progress', 2: 'badge-resolved', 3: 'badge-rejected' };
+                return classes[status] || 'bg-secondary';
+            }
+        });
+    </script>
+}

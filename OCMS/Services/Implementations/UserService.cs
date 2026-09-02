@@ -1,156 +1,155 @@
 ﻿using OCMS.DTOs.User;
-using OCMS.Entities;
 using OCMS.Mappers.Auth;
+using OCMS.Entities;
 using OCMS.Repositories;
 using OCMS.Services.Interfaces;
 using OCMS.Shared;
 using OCMS.Shared.Enums;
 using OCMS.Shared.Helpers;
 
-namespace OCMS.Services.Implementations
-{
-    public class UserService(
+namespace OCMS.Services.Implementations;
+
+public class UserService(
     IRepository<User> userRepo,
     IRepository<UserCredential> credRepo) : IUserService
+{
+    private readonly IRepository<User> _userRepo = userRepo;
+    private readonly IRepository<UserCredential> _credRepo = credRepo;
+
+    // ===================== GET PROFILE =====================
+    public async Task<AppResponse> GetProfileAsync(Guid userId)
     {
-        private readonly IRepository<User> _userRepo = userRepo;
-        private readonly IRepository<UserCredential> _credRepo = credRepo;
+        var user = await _userRepo.GetByIdAsync(userId);
 
-        // ===================== GET PROFILE =====================
-        public async Task<AppResponse> GetProfileAsync(Guid userId)
-        {
-            var user = await _userRepo.GetByIdAsync(userId);
+        if (user == null)
+            return AppResponse.Fail("User not found.");
 
-            if (user == null)
-                return AppResponse.Fail("User not found.");
+        var dto = new GetProfileDto(
+            FullName: user.FullName,
+            Email: user.Email,
+            ImageLink: user.ImageLink
+        );
 
-            var dto = new GetProfileDto(
-                FullName: user.FullName,
-                Email: user.Email,
-                ImageLink: user.ImageLink
-            );
+        return AppResponse.Ok("Profile fetched.", data: dto);
+    }
 
-            return AppResponse.Ok("Profile fetched.", data: dto);
-        }
+    // ===================== UPDATE PROFILE =====================
+    public async Task<AppResponse> UpdateProfileAsync(Guid userId, UpdateProfileDto dto)
+    {
+        var user = await _userRepo.GetByIdAsync(userId);
 
-        // ===================== UPDATE PROFILE =====================
-        public async Task<AppResponse> UpdateProfileAsync(Guid userId, UpdateProfileDto dto)
-        {
-            var user = await _userRepo.GetByIdAsync(userId);
+        if (user == null)
+            return AppResponse.Fail("User not found.");
 
-            if (user == null)
-                return AppResponse.Fail("User not found.");
+        // Email already taken by someone else?
+        var emailTaken = await _userRepo.ExistsAsync(
+            u => u.Email.ToLower() == dto.Email.ToLower()
+              && u.UserId != userId);
 
-            // Email already taken by someone else?
-            var emailTaken = await _userRepo.ExistsAsync(
-                u => u.Email.ToLower() == dto.Email.ToLower()
-                  && u.UserId != userId);
+        if (emailTaken)
+            return AppResponse.Fail("This email is already in use.");
 
-            if (emailTaken)
-                return AppResponse.Fail("This email is already in use.");
+        user.FullName = dto.FullName;
+        user.Email = dto.Email;
 
-            user.FullName = dto.FullName;
-            user.Email = dto.Email;
+        await _userRepo.UpdateAsync(user);
+        await _userRepo.SaveChangesAsync();
+        return AppResponse.Ok("Profile updated successfully.");
+    }
 
-            await _userRepo.UpdateAsync(user);
-            await _userRepo.SaveChangesAsync();
-            return AppResponse.Ok("Profile updated successfully.");
-        }
+    // ===================== CHANGE PASSWORD =====================
+    public async Task<AppResponse> ChangePasswordAsync(Guid userId, ChangePasswordDto dto)
+    {
+        if (dto.NewPassword != dto.ConfirmPassword)
+            return AppResponse.Fail("New passwords do not match.");
 
-        // ===================== CHANGE PASSWORD =====================
-        public async Task<AppResponse> ChangePasswordAsync(Guid userId, ChangePasswordDto dto)
-        {
-            if (dto.NewPassword != dto.ConfirmPassword)
-                return AppResponse.Fail("New passwords do not match.");
+        var credential = await _credRepo.GetFirstOrDefaultAsync(
+            c => c.UserId == userId);
 
-            var credential = await _credRepo.GetFirstOrDefaultAsync(
-                c => c.UserId == userId);
+        if (credential == null)
+            return AppResponse.Fail("User credentials not found.");
 
-            if (credential == null)
-                return AppResponse.Fail("User credentials not found.");
+        // Verify current password
+        var isValid = PasswordServices.VerifyPassword(
+            dto.CurrentPassword,
+            credential.PasswordHash,
+            credential.PasswordSalt);
 
-            // Verify current password
-            var isValid = PasswordServices.VerifyPassword(
-                dto.CurrentPassword,
-                credential.PasswordHash,
-                credential.PasswordSalt);
+        if (!isValid)
+            return AppResponse.Fail("Current password is incorrect.");
 
-            if (!isValid)
-                return AppResponse.Fail("Current password is incorrect.");
+        // Update password
+        UserMappers.MapToUpdatePassword(credential, dto.NewPassword);
+        await _credRepo.UpdateAsync(credential);
+        await _userRepo.SaveChangesAsync();
+        return AppResponse.Ok("Password changed successfully.");
+    }
 
-            // Update password
-            UserMappers.MapToUpdatePassword(credential, dto.NewPassword);
-            await _credRepo.UpdateAsync(credential);
-            await _userRepo.SaveChangesAsync();
-            return AppResponse.Ok("Password changed successfully.");
-        }
+    // ===================== UPLOAD IMAGE =====================
+    public async Task<AppResponse> UploadImageAsync(Guid userId, IFormFile imageFile)
+    {
+        var user = await _userRepo.GetByIdAsync(userId);
 
-        // ===================== UPLOAD IMAGE =====================
-        public async Task<AppResponse> UploadImageAsync(Guid userId, IFormFile imageFile)
-        {
-            var user = await _userRepo.GetByIdAsync(userId);
+        if (user == null)
+            return AppResponse.Fail("User not found.");
 
-            if (user == null)
-                return AppResponse.Fail("User not found.");
+        // Delete old image
+        ImageService.Delete(user.ImageLink);
 
-            // Delete old image
-            ImageService.Delete(user.ImageLink);
+        // Save new image
+        var imagePath = await ImageService.SaveAsync(imageFile, folder: "users");
 
-            // Save new image
-            var imagePath = await ImageService.SaveAsync(imageFile, folder: "users");
+        user.ImageLink = imagePath;
+        await _userRepo.UpdateAsync(user);
+        await _userRepo.SaveChangesAsync();
+        return AppResponse.Ok("Profile image updated.", data: new { imagePath });
+    }
 
-            user.ImageLink = imagePath;
-            await _userRepo.UpdateAsync(user);
-            await _userRepo.SaveChangesAsync();
-            return AppResponse.Ok("Profile image updated.", data: new { imagePath });
-        }
+    // ===================== GET ALL USERS =====================
+    public async Task<AppResponse> GetAllUsersAsync()
+    {
+        var users = await _userRepo.GetAllWithIncludeAsync(
+            u => u.UserRoles,
+            u => u.Complaints
+        );
 
-        // ===================== GET ALL USERS =====================
-        public async Task<AppResponse> GetAllUsersAsync()
-        {
-            var users = await _userRepo.GetAllWithIncludeAsync(
-                u => u.UserRoles,
-                u => u.Complaints
-            );
+        return AppResponse.Ok("Users fetched.", data: users.MapToGetAllUserDto());
+    }
 
-            return AppResponse.Ok("Users fetched.", data: users.MapToGetAllUserDto());
-        }
+    // ===================== TOGGLE STATUS =====================
+    public async Task<AppResponse> ToggleStatusAsync(Guid userId)
+    {
+        var user = await _userRepo.GetByIdAsync(userId);
 
-        // ===================== TOGGLE STATUS =====================
-        public async Task<AppResponse> ToggleStatusAsync(Guid userId)
-        {
-            var user = await _userRepo.GetByIdAsync(userId);
+        if (user == null)
+            return AppResponse.Fail("User not found.");
 
-            if (user == null)
-                return AppResponse.Fail("User not found.");
+        user.Status = user.Status == UserStatus.Active
+            ? UserStatus.Inactive
+            : UserStatus.Active;
 
-            user.Status = user.Status == UserStatus.Active
-                ? UserStatus.Inactive
-                : UserStatus.Active;
+        await _userRepo.UpdateAsync(user);
+        await _userRepo.SaveChangesAsync();
+        return AppResponse.Ok(
+            $"User {user.Status.ToString().ToLower()} successfully.",
+            data: new { status = user.Status }
+        );
+    }
 
-            await _userRepo.UpdateAsync(user);
-            await _userRepo.SaveChangesAsync();
-            return AppResponse.Ok(
-                $"User {user.Status.ToString().ToLower()} successfully.",
-                data: new { status = user.Status }
-            );
-        }
+    // ===================== DELETE USER =====================
+    public async Task<AppResponse> DeleteUserAsync(Guid userId)
+    {
+        var user = await _userRepo.GetByIdAsync(userId);
 
-        // ===================== DELETE USER =====================
-        public async Task<AppResponse> DeleteUserAsync(Guid userId)
-        {
-            var user = await _userRepo.GetByIdAsync(userId);
+        if (user == null)
+            return AppResponse.Fail("User not found.");
 
-            if (user == null)
-                return AppResponse.Fail("User not found.");
+        // Profile image delete karo
+        ImageService.Delete(user.ImageLink);
 
-            // Profile image delete 
-            ImageService.Delete(user.ImageLink);
-
-            // Credentials + Roles are deleted 
-            await _userRepo.DeleteByEntityAsync(user);
-            await _userRepo.SaveChangesAsync();
-            return AppResponse.Ok("User deleted successfully.");
-        }
+        // Credentials + Roles bhi delete honge (cascade)
+        await _userRepo.DeleteByEntityAsync(user);
+        await _userRepo.SaveChangesAsync();
+        return AppResponse.Ok("User deleted successfully.");
     }
 }

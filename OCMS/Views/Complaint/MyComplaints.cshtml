@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "My Complaints";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3><i class="fas fa-list me-2"></i>My Complaints</h3>
+            <a href="/Complaint/Submit" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> New Complaint
+            </a>
+        </div>
+
+        <!-- Loading -->
+        <div id="loadingSpinner" class="text-center py-5">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="mt-2 text-muted">Loading complaints...</p>
+        </div>
+
+        <!-- Table -->
+        <div id="complaintsTable" style="display:none;">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Track ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="complaintsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty -->
+        <div id="noComplaints" style="display:none;" class="text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No complaints submitted yet.</p>
+            <a href="/Complaint/Submit" class="btn btn-primary">Submit First Complaint</a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            LoadMyComplaints();
+        });
+
+        function LoadMyComplaints() {
+            $.ajax({
+                url: '/Complaint/GetMyComplaints',
+                type: 'GET',
+                success: function (response) {
+                    $('#loadingSpinner').hide();
+
+                    if (!response.success || response.data.length === 0) {
+                        $('#noComplaints').show();
+                        return;
+                    }
+
+                    let rows = '';
+                    response.data.forEach(c => {
+                        rows += `
+                            <tr>
+                                <td><span class="badge bg-secondary">${c.trackId}</span></td>
+                                <td>${c.title}</td>
+                                <td>${c.categoryName}</td>
+                                <td><span class="badge bg-${GetStatusColor(c.status)}">${GetStatusLabel(c.status)}</span></td>
+                                <td>${new Date(c.submissionDate).toLocaleDateString('en-GB')}</td>
+                                <td>
+                                    <a href="/Complaint/Track?id=${c.trackId}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>`;
+                    });
+
+                    $('#complaintsBody').html(rows);
+                    $('#complaintsTable').show();
+                }
+            });
+        }
+
+        function GetStatusColor(status) {
+            const map = { 0: 'warning', 1: 'primary', 2: 'success', 3: 'danger' };
+            return map[status] ?? 'secondary';
+        }
+
+        function GetStatusLabel(status) {
+            const map = { 0: 'Pending', 1: 'In Progress', 2: 'Resolved', 3: 'Rejected' };
+            return map[status] ?? 'Unknown';
+        }
+    </script>
+}

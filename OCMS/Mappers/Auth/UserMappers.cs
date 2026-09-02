@@ -43,7 +43,7 @@ namespace OCMS.Mappers.Auth
             {
                 UserRoleId = Guid.NewGuid(),
                 UserId = user.UserId,
-                Role = AppRoles.Admin
+                Role = AppRoles.User
             };
 
         }
