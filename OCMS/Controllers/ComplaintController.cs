@@ -42,7 +42,7 @@ namespace OCMS.Controllers
 
         [HttpGet]
         public async Task<IActionResult> TrackById(string trackId)
-            => Json(await _complaintService.GetByTrackIdAsync(trackId));
+            =>  Json(await _complaintService.GetByTrackIdAsync(trackId));
 
         [HttpPut]
         public async Task<IActionResult> UpdateStatus(Guid id, int status)
