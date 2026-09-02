@@ -18,5 +18,7 @@ namespace OCMS.Entities
         // ================== NAVIGATION PROPERTIES ==================
         public User User { get; set; } = null!;
         public Category Category { get; set; } = null!;
+        public ICollection<ComplaintResponse> Responses { get; set; } = new List<ComplaintResponse>();
+
     }
 }

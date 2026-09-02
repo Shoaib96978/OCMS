@@ -1,0 +1,454 @@
+﻿@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .skeleton {
+        background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+        background-size: 200% 100%;
+        animation: skeletonPulse 1.4s ease infinite;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    @@keyframes skeletonPulse {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* Skeleton for the 3 stat numbers */
+    .skeleton-stat {
+        width: 36px;
+        height: 24px;
+        margin: 0 auto 4px;
+    }
+
+    /* Skeleton cells inside the table */
+    .skeleton-cell {
+        height: 14px;
+        width: 80%;
+        margin: 2px auto;
+    }
+
+    .skeleton-cell.short  { width: 50%; }
+    .skeleton-cell.badge  { width: 70px; height: 20px; border-radius: 20px; }
+</style>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- ===================== LEFT COLUMN ===================== -->
+            <div class="col-lg-4">
+
+                <!-- Avatar card -->
+                <div class="ocms-card text-center mb-4">
+                    <div class="card-body-ocms py-4">
+                        <div class="profile-avatar-wrapper mx-auto mb-3">
+                            <img src="https://i.pravatar.cc/150?img=7"
+                                 alt="Profile"
+                                 id="avatar-preview">
+                            <label for="avatar-upload" class="avatar-badge">
+                                <i class="bi bi-camera"></i>
+                            </label>
+                            <input type="file" id="avatar-upload" class="d-none" accept="image/*">
+                        </div>
+
+                        <h5 id="profile-name" class="fw-700 mb-1">—</h5>
+                        <p id="profile-email-display" class="text-muted mb-2" style="font-size:.84rem;">—</p>
+
+                        <span class="badge-ocms" style="background:var(--primary-light);color:var(--primary);">
+                            <i class="bi bi-person-check me-1"></i>Verified User
+                        </span>
+
+                        <!-- Complaint counts — show skeleton until data arrives -->
+                        <div class="row g-2 mt-3 text-center">
+                            <div class="col-4">
+                                
+                                <div id="total-count" class="fw-700 fs-5">
+                                    <span class="skeleton skeleton-stat"></span>
+                                </div>
+                                <div class="text-muted" style="font-size:.74rem;">Total</div>
+                            </div>
+                            <div class="col-4">
+                                <div id="resolved-count" class="fw-700 fs-5 text-success">
+                                    <span class="skeleton skeleton-stat"></span>
+                                </div>
+                                <div class="text-muted" style="font-size:.74rem;">Resolved</div>
+                            </div>
+                            <div class="col-4">
+                                <div id="pending-count" class="fw-700 fs-5 text-warning">
+                                    <span class="skeleton skeleton-stat"></span>
+                                </div>
+                                <div class="text-muted" style="font-size:.74rem;">Pending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="ocms-card">
+                    <div class="card-body-ocms">
+                        <h6 class="fw-700 mb-3" style="font-size:.9rem;">
+                            <i class="bi bi-lock me-2 text-primary"></i>Change Password
+                        </h6>
+                        <form id="password-form" novalidate>
+                            <div class="ocms-form-group">
+                                <label class="ocms-label">Current Password</label>
+                                <input type="password" id="current-pass" class="ocms-input" placeholder="••••••••">
+                                <span class="ocms-error-msg"></span>
+                            </div>
+                            <div class="ocms-form-group">
+                                <label class="ocms-label">New Password</label>
+                                <input type="password" id="new-pass" class="ocms-input" placeholder="••••••••">
+                                <span class="ocms-error-msg"></span>
+                            </div>
+                            <div class="ocms-form-group">
+                                <label class="ocms-label">Confirm New Password</label>
+                                <input type="password" id="confirm-pass" class="ocms-input" placeholder="••••••••">
+                                <span class="ocms-error-msg"></span>
+                            </div>
+                            <button type="submit" id="pwd-btn" class="btn-primary-ocms w-100 justify-content-center">
+                                <i class="bi bi-lock-fill"></i> Update Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div><!-- /Left column -->
+
+
+            <!-- ===================== RIGHT COLUMN ===================== -->
+            <div class="col-lg-8">
+
+                <!-- Edit Profile -->
+                <div class="ocms-card mb-4">
+                    <div class="card-body-ocms">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h6 class="fw-700 mb-0" style="font-size:.95rem;">
+                                <i class="bi bi-pencil me-2 text-primary"></i>Edit Profile
+                            </h6>
+                        </div>
+                        <form id="profile-form" novalidate>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="ocms-form-group mb-0">
+                                        <label class="ocms-label">First Name <span class="req">*</span></label>
+                                        <input type="text" id="first-name" class="ocms-input" required>
+                                        <span class="ocms-error-msg"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="ocms-form-group mb-0">
+                                        <label class="ocms-label">Last Name <span class="req">*</span></label>
+                                        <input type="text" id="last-name" class="ocms-input" required>
+                                        <span class="ocms-error-msg"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="ocms-form-group mb-0">
+                                        <label class="ocms-label">Email Address <span class="req">*</span></label>
+                                        <input type="email" id="profile-email" class="ocms-input" required>
+                                        <span class="ocms-error-msg"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="ocms-form-group mb-0">
+                                        <label class="ocms-label">Phone Number</label>
+                                        <input type="tel" id="profile-phone" class="ocms-input">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="ocms-form-group mb-0">
+                                        <label class="ocms-label">Address</label>
+                                        <input type="text" id="profile-address" class="ocms-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-4 gap-2">
+                                <button type="button" id="profile-cancel-btn" class="btn-outline-ocms">Cancel</button>
+                                <button type="submit" id="profile-save-btn" class="btn-primary-ocms">
+                                    <i class="bi bi-floppy"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- My Complaints Table -->
+                <div class="ocms-card">
+                    <div class="card-body-ocms">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                            <h6 class="fw-700 mb-0" style="font-size:.95rem;">
+                                <i class="bi bi-clipboard2-list me-2 text-primary"></i>My Complaints
+                            </h6>
+                            <a asp-controller="Complaint" asp-action="Submit"
+                               class="btn-primary-ocms" style="font-size:.8rem;padding:7px 14px;">
+                                <i class="bi bi-plus"></i> New
+                            </a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="ocms-table">
+                                <thead>
+                                    <tr>
+                                        <th>Track ID</th>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="complaints-body">
+                                    <!-- Skeleton rows shown immediately on page load -->
+                                    @for (int i = 0; i < 4; i++)
+                                    {
+                                        <tr class="skeleton-row">
+                                            <td><span class="skeleton skeleton-cell short"></span></td>
+                                            <td><span class="skeleton skeleton-cell"></span></td>
+                                            <td><span class="skeleton skeleton-cell short"></span></td>
+                                            <td><span class="skeleton skeleton-cell badge"></span></td>
+                                            <td><span class="skeleton skeleton-cell short"></span></td>
+                                            <td><span class="skeleton skeleton-cell" style="width:30px;"></span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Empty state (hidden until we know list is empty) -->
+                        <div id="no-complaints" class="text-center text-muted py-4" style="display:none;">
+                            <i class="bi bi-clipboard-x fs-3 d-block mb-2"></i>
+                            You have not submitted any complaints yet.
+                        </div>
+
+                    </div>
+                </div>
+
+            </div><!-- /Right column -->
+
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+<script>
+
+    var _original = {};
+
+    $(document).ready(function () {
+        loadProfile();
+        loadComplaints();
+        bindEvents();
+    });
+
+
+    // ── 1. Load profile ───────────────────────────────────────────────
+    function loadProfile() {
+        $.get('@Url.Action("GetProfile", "User")', function (res) {
+            if (!res.success) { showToast(res.message, 'danger'); return; }
+
+            var d         = res.data;
+            var parts     = (d.fullName || '').split(' ');
+            var firstName = parts[0] || '';
+            var lastName  = parts.slice(1).join(' ');
+
+            $('#profile-name').text(d.fullName || '—');
+            $('#profile-email-display').text(d.email || '—');
+            if (d.imageLink) $('#avatar-preview').attr('src', d.imageLink);
+
+            $('#first-name').val(firstName);
+            $('#last-name').val(lastName);
+            $('#profile-email').val(d.email    || '');
+            $('#profile-phone').val(d.phone    || '');
+            $('#profile-address').val(d.address || '');
+
+            _original = {
+                firstName : firstName, lastName : lastName,
+                email     : d.email    || '',
+                phone     : d.phone    || '',
+                address   : d.address || ''
+            };
+        });
+    }
+
+
+    // ── 2. Load complaints + update counts ───────────────────────────
+    function loadComplaints() {
+        $.get('@Url.Action("GetMyComplaints", "Complaint")', function (res) {
+
+            // Always clear skeleton rows first
+            $('#complaints-body').empty();
+
+            if (!res.success) {
+                showToast(res.message, 'danger');
+                // Replace stat skeletons with dashes on failure
+                $('#total-count').text('—');
+                $('#resolved-count').text('—');
+                $('#pending-count').text('—');
+                return;
+            }
+
+            var list = res.data || [];
+
+            // ── Update stat counts (replaces skeleton spans) ─────────
+            // ComplaintStatus enum: Pending=0, InProgress=1, Resolved=2
+            var resolved   = list.filter(function (c) { return c.status === 2; }).length;
+            var pending    = list.filter(function (c) { return c.status === 0; }).length;
+
+            $('#total-count').text(list.length);
+            $('#resolved-count').text(resolved);
+            $('#pending-count').text(pending);
+
+            // ── Build table rows ─────────────────────────────────────
+            if (list.length === 0) {
+                $('#no-complaints').show();
+                return;
+            }
+
+            $('#no-complaints').hide();
+
+            var trackBase = '@Url.Action("Track", "Complaint")';
+
+            $.each(list, function (i, c) {
+                var row = '<tr>' +
+                    '<td><span class="fw-600">' + c.trackId + '</span></td>' +
+                    '<td>' + c.title + '</td>' +
+                    '<td>' + c.categoryName + '</td>' +
+                    '<td>' + getStatusBadge(c.status) + '</td>' +
+                    '<td>' + formatDate(c.submissionDate) + '</td>' +
+                    '<td>' +
+                        '<a href="' + trackBase + '?trackId=' + c.trackId + '" class="action-btn" title="View">' +
+                            '<i class="bi bi-eye"></i>' +
+                        '</a>' +
+                    '</td>' +
+                    '</tr>';
+                $('#complaints-body').append(row);
+            });
+
+        }).fail(function () {
+            // Network / server error
+            $('#complaints-body').empty();
+            $('#total-count').text('—');
+            $('#resolved-count').text('—');
+            $('#pending-count').text('—');
+            showToast('Failed to load complaints.', 'danger');
+        });
+    }
+
+
+    // ── 3. Bind events ────────────────────────────────────────────────
+    function bindEvents() {
+
+        // Edit Profile
+        $('#profile-form').on('submit', function (e) {
+            e.preventDefault();
+            var firstName = $('#first-name').val().trim();
+            var lastName  = $('#last-name').val().trim();
+            var email     = $('#profile-email').val().trim();
+
+            if (!firstName) { showFieldError('#first-name',    'First name is required.'); return; }
+            if (!email)     { showFieldError('#profile-email', 'Email is required.');      return; }
+
+            var data = { fullName: (firstName + ' ' + lastName).trim(), email: email };
+
+            OCMS.ajaxPost('@Url.Action("UpdateProfile", "User")', data,
+                document.getElementById('profile-save-btn'),
+                function () {
+                    $('#profile-name').text(data.fullName);
+                    $('#profile-email-display').text(data.email);
+                    _original = { firstName: firstName, lastName: lastName, email: email,
+                                  phone: $('#profile-phone').val().trim(),
+                                  address: $('#profile-address').val().trim() };
+                }
+            );
+        });
+
+        // Cancel
+        $('#profile-cancel-btn').on('click', function () {
+            $('#first-name').val(_original.firstName);
+            $('#last-name').val(_original.lastName);
+            $('#profile-email').val(_original.email);
+            $('#profile-phone').val(_original.phone);
+            $('#profile-address').val(_original.address);
+            clearFieldErrors('#profile-form');
+        });
+
+        // Change Password
+        $('#password-form').on('submit', function (e) {
+            e.preventDefault();
+            var currentPassword = $('#current-pass').val().trim();
+            var newPassword     = $('#new-pass').val().trim();
+            var confirmPassword = $('#confirm-pass').val().trim();
+
+            if (!currentPassword)               { showFieldError('#current-pass',  'Current password is required.'); return; }
+            if (newPassword.length < 6)         { showFieldError('#new-pass',      'Minimum 6 characters.');         return; }
+            if (newPassword !== confirmPassword) { showFieldError('#confirm-pass',  'Passwords do not match.');       return; }
+
+            OCMS.ajaxPost('@Url.Action("ChangePassword", "User")',
+                { currentPassword: currentPassword, newPassword: newPassword, confirmPassword: confirmPassword },
+                document.getElementById('pwd-btn'),
+                function () { $('#password-form')[0].reset(); }
+            );
+        });
+
+        // Avatar upload
+        $('#avatar-upload').on('change', function () {
+            if (!this.files || !this.files.length) return;
+
+            var reader = new FileReader();
+            reader.onload = function (e) { $('#avatar-preview').attr('src', e.target.result); };
+            reader.readAsDataURL(this.files[0]);
+
+            var formData = new FormData();
+            formData.append('imageFile', this.files[0]);
+
+            OCMS.ajaxPostForm('@Url.Action("UploadImage", "User")', formData, null, function (res) {
+                if (res.data && res.data.imagePath)
+                    $('#avatar-preview').attr('src', res.data.imagePath);
+            });
+        });
+
+        // Clear field error while typing
+        $(document).on('input', '.ocms-input', function () {
+            $(this).removeClass('is-invalid');
+            $(this).closest('.ocms-form-group').find('.ocms-error-msg').text('').hide();
+        });
+    }
+
+
+    // ── 4. Helpers ────────────────────────────────────────────────────
+
+    // Must match your C# ComplaintStatus enum values
+    function getStatusBadge(status) {
+        switch (status) {
+            case 0: return '<span class="badge-ocms badge-pending">Pending</span>';
+            case 1: return '<span class="badge-ocms badge-progress">In Progress</span>';
+            case 2: return '<span class="badge-ocms badge-resolved">Resolved</span>';
+            default: return '<span class="badge-ocms">' + status + '</span>';
+        }
+    }
+
+    // "2025-01-12T00:00:00" → "12 Jan 2025"
+    function formatDate(isoString) {
+        if (!isoString) return '—';
+        var d = new Date(isoString);
+        return d.getDate() + ' ' + d.toLocaleString('en', { month: 'short' }) + ' ' + d.getFullYear();
+    }
+
+    function showFieldError(selector, message) {
+        $(selector).addClass('is-invalid')
+            .closest('.ocms-form-group')
+            .find('.ocms-error-msg').text(message).show();
+    }
+
+    function clearFieldErrors(formSelector) {
+        $(formSelector).find('.ocms-input').removeClass('is-invalid');
+        $(formSelector).find('.ocms-error-msg').text('').hide();
+    }
+
+</script>
+}
