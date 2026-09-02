@@ -1,8 +1,250 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- ═══ Hero ══════════════════════════════════════════════════ -->
+<section class="home-hero">
+    <div class="container py-5">
+        <div class="row align-items-center gy-5">
+
+            <div class="col-lg-6">
+                <div class="section-label">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                    Trusted by 1,000+ citizens
+                </div>
+                <h1 class="hero-title">
+                    File. Track.<br>
+                    <span>Resolve</span> — Fast.
+                </h1>
+                <p class="hero-subtitle">
+                    OCMS is a transparent online platform where citizens can file complaints,
+                    track status in real-time, and get resolutions — efficiently.
+                </p>
+                <div class="hero-actions">
+                    <a href="submit-complaint.html" class="btn-primary-ocms">
+                        <i class="bi bi-send-fill"></i> Submit a Complaint
+                    </a>
+                    <a href="track-complaint.html" class="btn-light-ocms">
+                        <i class="bi bi-search"></i> Track Complaint
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat-box">
+                        <div class="stat-val">500+</div>
+                        <div class="stat-lbl">Resolved</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">99%</div>
+                        <div class="stat-lbl">Transparency</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">1K+</div>
+                        <div class="stat-lbl">Users</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 offset-lg-1">
+                <div class="hero-card">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div style="width:10px;height:10px;border-radius:50%;background:#ef4444;"></div>
+                        <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b;"></div>
+                        <div style="width:10px;height:10px;border-radius:50%;background:#22c55e;"></div>
+                        <span class="ms-2 text-white-50" style="font-size:.78rem;">Complaint #4821 — Live Status</span>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-white-50">Water Supply Issue</small>
+                            <span class="badge-ocms badge-progress" style="background:rgba(96,165,250,.2);color:#93c5fd;">In Progress</span>
+                        </div>
+                        <div class="progress" style="height:5px;background:rgba(255,255,255,.1);border-radius:4px;">
+                            <div class="progress-bar" style="width:65%;background:#3b82f6;border-radius:4px;"></div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column gap-2 mt-3">
+                        <div class="d-flex align-items-center gap-3 p-2 rounded" style="background:rgba(255,255,255,.06);">
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <div>
+                                <div class="text-white" style="font-size:.82rem;font-weight:600;">Complaint Received</div>
+                                <div class="text-white-50" style="font-size:.74rem;">Jan 10, 2025 · 09:42 AM</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 p-2 rounded" style="background:rgba(255,255,255,.06);">
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <div>
+                                <div class="text-white" style="font-size:.82rem;font-weight:600;">Assigned to Department</div>
+                                <div class="text-white-50" style="font-size:.74rem;">Jan 11, 2025 · 11:00 AM</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 p-2 rounded" style="background:rgba(59,130,246,.18);">
+                            <i class="bi bi-arrow-repeat text-primary" style="animation:spin .9s linear infinite;display:inline-block;"></i>
+                            <div>
+                                <div class="text-white" style="font-size:.82rem;font-weight:600;">Under Investigation</div>
+                                <div class="text-white-50" style="font-size:.74rem;">In progress…</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══ Features ══════════════════════════════════════════════ -->
+<section class="py-5 mt-2">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label mx-auto"><i class="bi bi-stars"></i> Why OCMS</div>
+            <div class="section-title">Built for Transparency &amp; Speed</div>
+            <p class="section-sub mx-auto text-center">Everything you need to file, track, and resolve complaints — in one platform.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-sm-6 col-lg-3">
+                <div class="feature-card h-100">
+                    <div class="f-icon"><i class="bi bi-lightning-charge"></i></div>
+                    <h5>Quick Submission</h5>
+                    <p>Submit any complaint in under 2 minutes with our clean, step-by-step form.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="feature-card h-100">
+                    <div class="f-icon"><i class="bi bi-shield-lock"></i></div>
+                    <h5>Secure &amp; Private</h5>
+                    <p>Your data is encrypted and handled with full confidentiality at all times.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="feature-card h-100">
+                    <div class="f-icon"><i class="bi bi-binoculars"></i></div>
+                    <h5>Real-time Tracking</h5>
+                    <p>Monitor every step of your complaint's resolution journey live.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="feature-card h-100">
+                    <div class="f-icon"><i class="bi bi-person-check"></i></div>
+                    <h5>User-Friendly</h5>
+                    <p>Clean interface designed for everyone — no technical know-how needed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ How It Works ══════════════════════════════════════════ -->
+<section class="py-5" style="background:#f8fafc;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label mx-auto"><i class="bi bi-map"></i> Process</div>
+            <div class="section-title">How It Works</div>
+            <p class="section-sub mx-auto text-center">Four simple steps from complaint to resolution.</p>
+        </div>
+        <div class="row g-4 align-items-center">
+            <div class="col-sm-6 col-lg-3">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <i class="bi bi-person-plus-fill fs-2 text-primary mb-2 d-block"></i>
+                    <h6>Register Account</h6>
+                    <p>Create your free OCMS account with email verification.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <i class="bi bi-file-earmark-text-fill fs-2 text-primary mb-2 d-block"></i>
+                    <h6>Submit Complaint</h6>
+                    <p>Fill the form with details, category, and optional photos.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <i class="bi bi-search fs-2 text-primary mb-2 d-block"></i>
+                    <h6>Track Status</h6>
+                    <p>Monitor your complaint in real-time using your unique ID.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <i class="bi bi-patch-check-fill fs-2 text-primary mb-2 d-block"></i>
+                    <h6>Get Resolution</h6>
+                    <p>Receive updates and final resolution directly on your dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ Stats ══════════════════════════════════════════════════ -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row text-center gy-4">
+            <div class="col-6 col-lg-3 stat-item"><div class="val">500+</div><div class="lbl">Complaints Resolved</div></div>
+            <div class="col-6 col-lg-3 stat-item"><div class="val">1,200+</div><div class="lbl">Active Users</div></div>
+            <div class="col-6 col-lg-3 stat-item"><div class="val">98%</div><div class="lbl">Satisfaction Rate</div></div>
+            <div class="col-6 col-lg-3 stat-item"><div class="val">24h</div><div class="lbl">Avg Response Time</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ Testimonials ══════════════════════════════════════════ -->
+<section class="py-5 mt-2">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label mx-auto"><i class="bi bi-chat-quote"></i> Testimonials</div>
+            <div class="section-title">What Citizens Say</div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"OCMS made it incredibly easy to file my complaint. The process was smooth and I got a resolution within days!"</p>
+                    <div class="t-author">
+                        <img src="https://i.pravatar.cc/80?img=1" alt="Sarah">
+                        <div><div class="name">Sarah Johnson</div><div class="role">Citizen, Karachi</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"I could track my issue in real-time. It felt reassuring to be updated at every step of the process."</p>
+                    <div class="t-author">
+                        <img src="https://i.pravatar.cc/80?img=3" alt="Ahmed">
+                        <div><div class="name">Ahmed Khan</div><div class="role">Business Owner, Lahore</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="stars">★★★★☆</div>
+                    <p>"Very professional system. My water supply complaint was resolved within 48 hours. Highly recommended!"</p>
+                    <div class="t-author">
+                        <img src="https://i.pravatar.cc/80?img=5" alt="Maria">
+                        <div><div class="name">Maria Lopez</div><div class="role">Resident, Islamabad</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ CTA Banner ════════════════════════════════════════════ -->
+<section class="py-5">
+    <div class="container">
+        <div class="p-5 rounded-4 text-white text-center" style="background:linear-gradient(135deg,#1a56db,#0f172a);">
+            <h2 class="fw-800" style="font-family:var(--font-display);">Ready to File Your Complaint?</h2>
+            <p class="opacity-75 mb-4">Join thousands of citizens getting their issues resolved fast.</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="register.html" class="btn-primary-ocms" style="background:#f97316;border:none;">Get Started Free</a>
+                <a href="submit-complaint.html" class="btn-light-ocms">Submit Complaint</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+

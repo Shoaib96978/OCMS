@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "LoginPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Auth -->
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-logo"><i class="bi bi-shield-check"></i> OCMS</div>
+        <h2>Welcome Back</h2>
+        <p class="auth-sub">Sign in to your account to continue</p>
+
+        <form id="login-form" novalidate>
+            <div class="ocms-form-group">
+                <label class="ocms-label">Email Address <span class="req">*</span></label>
+                <div class="position-relative">
+                    <i class="bi bi-envelope" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.9rem;"></i>
+                    <input type="email" id="email" name="Email" class="ocms-input" style="padding-left:38px;" placeholder="you@example.com" required>
+                </div>
+                <span class="ocms-error-msg"></span>
+            </div>
+
+            <div class="ocms-form-group">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="ocms-label mb-0">Password <span class="req">*</span></label>
+                    <a href="#" style="font-size:.78rem;color:var(--primary);">Forgot password?</a>
+                </div>
+                <div class="position-relative">
+                    <i class="bi bi-lock" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.9rem;"></i>
+                    <input type="password" name="Password" id="password" class="ocms-input" style="padding-left:38px;padding-right:40px;" placeholder="Enter your password" required>
+                    <button type="button" id="toggle-password" class="btn border-0 p-0"
+                            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span class="ocms-error-msg"></span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <input type="checkbox" id="remember" name="RememberMe" class="form-check-input m-0" style="width:16px;height:16px;">
+                <label for="remember" style="font-size:.83rem;color:var(--text-muted);cursor:pointer;">Remember me for 30 days</label>
+            </div>
+
+            <button type="submit" id="login-btn" class="btn-primary-ocms w-100 justify-content-center">
+                <i class="bi bi-box-arrow-in-right"></i> Sign In
+            </button>
+        </form>
+
+        <div class="auth-divider">or continue with</div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary flex-fill" style="font-size:.82rem;border-radius:var(--radius);">
+                <i class="bi bi-google me-1"></i> Google
+            </button>
+            <button class="btn btn-outline-secondary flex-fill" style="font-size:.82rem;border-radius:var(--radius);">
+                <i class="bi bi-github me-1"></i> GitHub
+            </button>
+        </div>
+
+        <p class="text-center mt-4" style="font-size:.84rem;color:var(--text-muted);">
+            Don't have an account? <a href="register.html" style="color:var(--primary);font-weight:600;">Register Free</a>
+        </p>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/assets/js/auth.js"></script>
+    
+}
