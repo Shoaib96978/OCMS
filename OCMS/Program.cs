@@ -4,6 +4,7 @@ using OCMS.Data;
 using OCMS.Repositories;
 using OCMS.Services.Implementations;
 using OCMS.Services.Interfaces;
+using OCMS.Shared;
 
 namespace OCMS
 {
@@ -60,6 +61,9 @@ namespace OCMS
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddHttpContextAccessor();
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IContactService, ContactService>();
 
 
             var app = builder.Build();

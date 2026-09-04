@@ -237,8 +237,10 @@
 @section Scripts {
 <script>
 
+    // ── State ─────────────────────────────────────────────────────────
     var _original = {};
 
+    // ── Init ─────────────────────────────────────────────────────────
     $(document).ready(function () {
         loadProfile();
         loadComplaints();
@@ -249,7 +251,7 @@
     // ── 1. Load profile ───────────────────────────────────────────────
     function loadProfile() {
         $.get('@Url.Action("GetProfile", "User")', function (res) {
-            if (!res.success) { showToast(res.message, 'danger'); return; }
+            if (!res.success) { OCMS.showToast(res.message, 'danger'); return; }
 
             var d         = res.data;
             var parts     = (d.fullName || '').split(' ');
@@ -272,6 +274,8 @@
                 phone     : d.phone    || '',
                 address   : d.address || ''
             };
+        }).fail(function () {
+            OCMS.showToast('Failed to load profile.', 'danger');
         });
     }
 
@@ -280,30 +284,24 @@
     function loadComplaints() {
         $.get('@Url.Action("GetMyComplaints", "Complaint")', function (res) {
 
-            // Always clear skeleton rows first
             $('#complaints-body').empty();
 
             if (!res.success) {
-                showToast(res.message, 'danger');
-                // Replace stat skeletons with dashes on failure
-                $('#total-count').text('—');
-                $('#resolved-count').text('—');
-                $('#pending-count').text('—');
+                OCMS.showToast(res.message, 'danger');
+                setStatSkeletonFallback();
                 return;
             }
 
             var list = res.data || [];
 
-            // ── Update stat counts (replaces skeleton spans) ─────────
             // ComplaintStatus enum: Pending=0, InProgress=1, Resolved=2
-            var resolved   = list.filter(function (c) { return c.status === 2; }).length;
-            var pending    = list.filter(function (c) { return c.status === 0; }).length;
+            var resolved = list.filter(function (c) { return c.status === 2; }).length;
+            var pending  = list.filter(function (c) { return c.status === 0; }).length;
 
             $('#total-count').text(list.length);
             $('#resolved-count').text(resolved);
             $('#pending-count').text(pending);
 
-            // ── Build table rows ─────────────────────────────────────
             if (list.length === 0) {
                 $('#no-complaints').show();
                 return;
@@ -330,13 +328,16 @@
             });
 
         }).fail(function () {
-            // Network / server error
             $('#complaints-body').empty();
-            $('#total-count').text('—');
-            $('#resolved-count').text('—');
-            $('#pending-count').text('—');
-            showToast('Failed to load complaints.', 'danger');
+            setStatSkeletonFallback();
+            OCMS.showToast('Failed to load complaints.', 'danger');
         });
+    }
+
+    function setStatSkeletonFallback() {
+        $('#total-count').text('—');
+        $('#resolved-count').text('—');
+        $('#pending-count').text('—');
     }
 
 
@@ -384,9 +385,9 @@
             var newPassword     = $('#new-pass').val().trim();
             var confirmPassword = $('#confirm-pass').val().trim();
 
-            if (!currentPassword)               { showFieldError('#current-pass',  'Current password is required.'); return; }
-            if (newPassword.length < 6)         { showFieldError('#new-pass',      'Minimum 6 characters.');         return; }
-            if (newPassword !== confirmPassword) { showFieldError('#confirm-pass',  'Passwords do not match.');       return; }
+            if (!currentPassword)                { showFieldError('#current-pass',  'Current password is required.'); return; }
+            if (newPassword.length < 6)           { showFieldError('#new-pass',      'Minimum 6 characters.');         return; }
+            if (newPassword !== confirmPassword)  { showFieldError('#confirm-pass',  'Passwords do not match.');       return; }
 
             OCMS.ajaxPost('@Url.Action("ChangePassword", "User")',
                 { currentPassword: currentPassword, newPassword: newPassword, confirmPassword: confirmPassword },
@@ -421,8 +422,6 @@
 
 
     // ── 4. Helpers ────────────────────────────────────────────────────
-
-    // Must match your C# ComplaintStatus enum values
     function getStatusBadge(status) {
         switch (status) {
             case 0: return '<span class="badge-ocms badge-pending">Pending</span>';
@@ -432,7 +431,6 @@
         }
     }
 
-    // "2025-01-12T00:00:00" → "12 Jan 2025"
     function formatDate(isoString) {
         if (!isoString) return '—';
         var d = new Date(isoString);

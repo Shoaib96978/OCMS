@@ -28,3 +28,18 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        $('#verifyEmailForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const email = $('#verifyEmail').val().trim();
+            if (!email) return;
+
+            const data = { Email: email };
+
+            OCMS.ajaxPost('/Auth/VerifyEmail', data, document.querySelector('.login-btn'));
+        });
+    </script>
+}

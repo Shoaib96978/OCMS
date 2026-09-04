@@ -7,5 +7,7 @@ namespace OCMS.Services.Interfaces
     {
         Task<AppResponse> RegisterAsync(RegisterDto dto);
         Task<AppResponse> LoginAsync(LoginDto dto);
+        Task<AppResponse> ForgotPasswordAsync(ForgotPasswordDto dto);
+        Task<AppResponse> ResetPasswordAsync(ResetPasswordDto dto);
     }
 }

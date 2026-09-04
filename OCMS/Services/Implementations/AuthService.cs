@@ -16,12 +16,15 @@ namespace OCMS.Services.Implementations
         IRepository<User> userRepo,
         IRepository<UserCredential> credRepo,
         IRepository<UserRole> roleRepo,
-        IHttpContextAccessor http) : IAuthService
+        IHttpContextAccessor http,
+        IEmailService emailService) : IAuthService
     {
         private readonly IRepository<User> _userRepo = userRepo;
         private readonly IRepository<UserCredential> _credRepo = credRepo;
         private readonly IRepository<UserRole> _roleRepo = roleRepo;
         private readonly IHttpContextAccessor _http = http;
+        private readonly IEmailService _emailService = emailService;
+
 
         // ===================== REGISTER =====================
         public async Task<AppResponse> RegisterAsync(RegisterDto dto)
@@ -112,5 +115,75 @@ namespace OCMS.Services.Implementations
             return AppResponse.Ok("Login successful! Welcome back.",
                 redirectUrl: redirectUrl);
         }
+
+        public async Task<AppResponse> ForgotPasswordAsync(ForgotPasswordDto dto)
+        {
+            var user = await _userRepo.GetFirstOrDefaultAsync(
+                u => u.Email.ToLower() == dto.Email.ToLower());
+
+            if (user == null)
+                return AppResponse.Fail("No account found with this email.");
+
+            var credential = await _credRepo.GetFirstOrDefaultAsync(c => c.UserId == user.UserId);
+            if (credential == null)
+                return AppResponse.Fail("Invalid request.");
+
+            var otp = new Random().Next(100000, 999999).ToString();
+            credential.Otp = otp;
+            credential.OtpExpiry = DateTime.UtcNow.AddMinutes(10);
+
+            await _credRepo.UpdateAsync(credential);
+            var saved = await _credRepo.SaveChangesAsync() > 0;
+
+            if (!saved)
+                return AppResponse.Fail("Internal Server Error");
+
+            var body = $@"
+                <p>Hi {user.FullName},</p>
+                <p>Your OTP for password reset is:</p>
+                <h2 style='letter-spacing:4px;'>{otp}</h2>
+                <p>This OTP is valid for 10 minutes.</p>
+                <p>If you did not request this, please ignore this email.</p>
+            ";
+
+            var emailSent = await _emailService.SendEmailAsync(
+                user.Email, "OCMS - Password Reset OTP", body);
+
+            if (!emailSent)
+                return AppResponse.Fail("Could not send OTP email. Please try again.");
+
+            return AppResponse.Ok(
+                "OTP sent to your email. Please check your inbox.",
+                redirectUrl: "/Auth/ResetPasswordPage",
+                data: user.UserId
+            );
+        }
+
+        // ===================== RESET PASSWORD =====================
+        public async Task<AppResponse> ResetPasswordAsync(ResetPasswordDto dto)
+        {
+            if (dto.Password != dto.ConfirmPassword)
+                return AppResponse.Fail("Passwords do not match.");
+
+            var credential = await _credRepo.GetFirstOrDefaultAsync(c => c.UserId == dto.UserId);
+            if (credential == null)
+                return AppResponse.Fail("Invalid request.");
+
+            if (string.IsNullOrEmpty(credential.Otp) || credential.Otp != dto.Otp)
+                return AppResponse.Fail("Invalid OTP.");
+
+            if (credential.OtpExpiry == null || credential.OtpExpiry < DateTime.UtcNow)
+                return AppResponse.Fail("OTP has expired. Please request a new one.");
+
+            UserMappers.MapToUpdatePassword(credential, dto.Password);
+            credential.OtpExpiry = null;   // clear expiry too
+
+            await _credRepo.UpdateAsync(credential);
+
+            return await _credRepo.SaveChangesAsync() > 0
+                ? AppResponse.Ok("Password updated successfully! Please login.", redirectUrl: "/Auth/LoginPage")
+                : AppResponse.Fail("Internal Server Error");
+        }
     }
 }
+

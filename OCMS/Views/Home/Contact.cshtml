@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Contact";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -150,3 +149,74 @@
 </section>
 
 
+@section Scripts {
+    <script>
+          
+        $(document).ready(function () {
+
+            $('#contact-form').on('submit', function (e) {
+                e.preventDefault();
+
+                if (!validateContactForm()) return;
+
+                const data = {
+                    Name: $('#c-name').val().trim(),
+                    Email: $('#c-email').val().trim(),
+                    Phone: $('#c-phone').val().trim(),
+                    Subject: $('#c-subject').val(),
+                    Message: $('#c-message').val().trim()
+                };
+
+                OCMS.ajaxPost('/Contact/Send', data, document.getElementById('contact-btn'), function (response) {
+                    $('#contact-form')[0].reset();
+                    clearContactErrors();
+                });
+            });
+
+            // Live clear error on input
+            $('#c-name, #c-email, #c-phone, #c-subject, #c-message').on('input change', function () {
+                $(this).removeClass('is-invalid');
+                $(this).siblings('.ocms-error-msg').text('');
+            });
+        });
+
+        // =========================
+        // Validation
+        // =========================
+                function validateContactForm() {
+            let valid = true;
+            clearContactErrors();
+
+            const name = $('#c-name').val().trim();
+            if (!name) {
+                showFieldError('#c-name', 'Full name is required.');
+                valid = false;
+            }
+
+            const email = $('#c-email').val().trim();
+            const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!email) {
+                showFieldError('#c-email', 'Email address is required.');
+                valid = false;
+            } else if (!emailPattern.test(email)) {
+                showFieldError('#c-email', 'Enter a valid email address.');
+                valid = false;
+            }
+
+            // ...baaki same rahega
+        }
+
+        function showFieldError(selector, message) {
+            $(selector).addClass('is-invalid');
+            $(selector).siblings('.ocms-error-msg').text(message);
+        }
+
+        function clearContactErrors() {
+            $('#contact-form .is-invalid').removeClass('is-invalid');
+            $('#contact-form .ocms-error-msg').text('');
+        }
+ 
+    </script>
+}
+
+                              
