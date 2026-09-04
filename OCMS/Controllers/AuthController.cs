@@ -12,6 +12,8 @@ namespace OCMS.Controllers
 
         [HttpGet] public IActionResult LoginPage() => View();
         [HttpGet] public IActionResult RegisterPage() => View();
+        [HttpGet] public IActionResult VerifyEmailPage() => View();
+        [HttpGet] public IActionResult ResetPasswordPage() => View();
 
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] RegisterDto dto)
@@ -28,5 +30,20 @@ namespace OCMS.Controllers
 
             return RedirectToAction("LoginPage");
         }
+        [HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> VerifyEmail([FromBody] ForgotPasswordDto dto)
+        {
+            var response = await _authService.ForgotPasswordAsync(dto);
+
+            if (response.Success && response.Data is Guid userId)
+                TempData["userId"] = userId;
+
+            return Json(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+            => Json(await _authService.ResetPasswordAsync(dto));
     }
 }
