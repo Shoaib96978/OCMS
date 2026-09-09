@@ -1,11 +1,12 @@
 ﻿using OCMS.DTOs.Complaint;
-using OCMS.Mappers.Complaint;
 using OCMS.Entities;
+using OCMS.Mappers.Complaint;
 using OCMS.Repositories;
 using OCMS.Services.Interfaces;
 using OCMS.Shared;
 using OCMS.Shared.Enums;
 using OCMS.Shared.Helpers;
+using System.Linq.Expressions;
 
 namespace OCMS.Services.Implementations
 {
@@ -46,7 +47,38 @@ namespace OCMS.Services.Implementations
 
             return AppResponse.Ok("Complaints fetched successfully.", data: result);
         }
+        public async Task<AppResponse> GetFilteredAsync(ComplaintFilterDto dto)
+        {
+            Expression<Func<Complaint, bool>> filter = c =>
+                (dto.Status == null || (int)c.Status == dto.Status) &&
+                (string.IsNullOrEmpty(dto.CategoryName) || c.Category!.CategoryName == dto.CategoryName) &&
+                (dto.DateFrom == null || c.SubmissionDate >= dto.DateFrom) &&
+                (string.IsNullOrEmpty(dto.Search) ||
+                    c.Title.Contains(dto.Search) ||
+                    c.TrackId.Contains(dto.Search) ||
+                    c.User!.FullName.Contains(dto.Search));
 
+            var totalCount = await _complaintRepo.CountAsync(filter);
+
+            var complaints = await _complaintRepo.GetPagedWithIncludeAsync(
+                dto.Page,
+                dto.PageSize,
+                filter,
+                orderBy: c => c.SubmissionDate,
+                isDescending: true,
+                includes: [c => c.Category!, c => c.User!]
+            );
+
+            var mapped = complaints.Select(c => c.MapToGetComplaintDto());
+
+            return AppResponse.Ok("Complaints fetched.", data: new
+            {
+                items = mapped,
+                totalCount,
+                totalPages = (int)Math.Ceiling(totalCount / (double)dto.PageSize),
+                page = dto.Page
+            });
+        }
         // ===================== GET BY USER =====================
         public async Task<AppResponse> GetByUserIdAsync(Guid userId)
         {
@@ -102,8 +134,8 @@ namespace OCMS.Services.Implementations
             complaint.Status = (ComplaintStatus)status;
 
             await _complaintRepo.UpdateAsync(complaint);
-
-            return AppResponse.Ok("Complaint status updated successfully.");
+            var result = await _complaintRepo.SaveChangesAsync();
+            return result > 0 ? AppResponse.Ok("Complaint status updated successfully.") : AppResponse.Fail("Server Error !");
         }
 
         // ===================== DELETE =====================
@@ -117,8 +149,9 @@ namespace OCMS.Services.Implementations
             ImageService.Delete(complaint.ImagePath);
 
             await _complaintRepo.DeleteByEntityAsync(complaint);
+            var result = await _complaintRepo.SaveChangesAsync();
 
-            return AppResponse.Ok("Complaint deleted successfully.");
+            return result > 0 ? AppResponse.Ok("Complaint deleted successfully.") : AppResponse.Fail("Server Error !");
         }
     }
 }

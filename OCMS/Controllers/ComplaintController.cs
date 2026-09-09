@@ -42,14 +42,19 @@ namespace OCMS.Controllers
 
         [HttpGet]
         public async Task<IActionResult> TrackById(string trackId)
-            =>  Json(await _complaintService.GetByTrackIdAsync(trackId));
-
+            => Json(await _complaintService.GetByTrackIdAsync(trackId));
+        [HttpGet]
+        public async Task<IActionResult> GetById(Guid id)
+                                         => Json(await _complaintService.GetByIdAsync(id));
+        [HttpGet]
+        public async Task<IActionResult> GetFiltered([FromQuery] ComplaintFilterDto dto)
+                                         => Json(await _complaintService.GetFilteredAsync(dto));
         [HttpPut]
         public async Task<IActionResult> UpdateStatus(Guid id, int status)
-            => Json(await _complaintService.UpdateStatusAsync(id, status));
+                                         => Json(await _complaintService.UpdateStatusAsync(id, status));
 
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
-            => Json(await _complaintService.DeleteAsync(id));
+                                         => Json(await _complaintService.DeleteAsync(id));
     }
 }

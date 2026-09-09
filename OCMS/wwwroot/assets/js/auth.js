@@ -1,6 +1,6 @@
 ﻿$(function () {
 
-    // ── LOGIN — only runs if login form exists on this page ──
+    // -─ LOGIN — only runs if login form exists on this page ──
     if ($('#login-form').length) {
 
         $('#toggle-password').on('click', function () {

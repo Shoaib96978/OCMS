@@ -1,0 +1,497 @@
+﻿@{
+    ViewData["Title"] = "Complaints Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+    <div>
+        <h4>Manage Complaints</h4>
+        <p>View, update status, and manage all submitted complaints.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn-outline-ocms" style="font-size:.82rem;padding:8px 16px;" id="export-btn">
+            <i class="bi bi-download"></i> Export CSV
+        </button>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-sm-6 col-md-3">
+                <label class="ocms-label">Status</label>
+                <select id="status-filter" class="ocms-select">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="in progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <label class="ocms-label">Category</label>
+                <select id="category-filter" class="ocms-select">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <label class="ocms-label">Date From</label>
+                <input type="date" id="date-from" class="ocms-input">
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <label class="ocms-label">Search</label>
+                <input type="text" id="search-input" class="ocms-input" placeholder="Track ID, title, user...">
+            </div>
+            <div class="col-sm-6 col-md-3 d-flex gap-2 align-items-end">
+                <button class="btn-primary-ocms flex-fill justify-content-center" id="apply-filters">
+                    <i class="bi bi-funnel"></i> Apply
+                </button>
+                <button class="btn-outline-ocms" id="clear-filters" title="Clear filters">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h6 class="mb-0">All Complaints</h6>
+        <span class="ms-2 badge bg-secondary" style="font-size:.72rem;" id="row-count">4 records</span>
+        <div class="ms-auto d-flex gap-2 align-items-center">
+            <select class="form-select form-select-sm" id="bulk-action" style="width:160px;font-size:.78rem;">
+                <option value="">Bulk Action</option>
+                <option value="resolve">Mark Resolved</option>
+                <option value="reject">Mark Rejected</option>
+                <option value="delete">Delete Selected</option>
+            </select>
+            <button class="btn btn-sm btn-outline-secondary" id="bulk-apply" style="font-size:.78rem;">Apply</button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="ocms-table" id="complaints-table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all" style="width:15px;height:15px;cursor:pointer;"></th>
+                    <th>#ID</th>
+                    <th>User</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="complaints-body">
+                <!-- Row 1 -->
+                <tr data-status="in progress" data-category="service">
+                    <td><input type="checkbox" class="row-select" style="width:15px;height:15px;cursor:pointer;"></td>
+                    <td class="fw-600">#4821</td>
+                    <td><div class="d-flex align-items-center gap-2"><img src="https://i.pravatar.cc/40?img=1" style="width:28px;height:28px;border-radius:50%;" alt=""><span>Sarah Johnson</span></div></td>
+                    <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Water supply interrupted for 3 days</td>
+                    <td>Service</td>
+                    <td><span class="badge-ocms" style="background:#fee2e2;color:#991b1b;">Urgent</span></td>
+                    <td>Jan 12, 2025</td>
+                    <td>
+                        <select class="form-select form-select-sm status-inline" data-id="4821" style="width:120px;font-size:.75rem;">
+                            <option>Pending</option>
+                            <option selected>In Progress</option>
+                            <option>Resolved</option>
+                            <option>Rejected</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="action-btn btn-view-complaint" data-id="4821" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="action-btn btn-update-status" data-id="4821" title="Save Status"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="4821" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Row 2 -->
+                <tr data-status="pending" data-category="billing">
+                    <td><input type="checkbox" class="row-select" style="width:15px;height:15px;cursor:pointer;"></td>
+                    <td class="fw-600">#4820</td>
+                    <td><div class="d-flex align-items-center gap-2"><img src="https://i.pravatar.cc/40?img=3" style="width:28px;height:28px;border-radius:50%;" alt=""><span>Ahmed Khan</span></div></td>
+                    <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Overcharged for electricity bill</td>
+                    <td>Billing</td>
+                    <td><span class="badge-ocms" style="background:#f0fdf4;color:#166534;">Normal</span></td>
+                    <td>Jan 11, 2025</td>
+                    <td>
+                        <select class="form-select form-select-sm status-inline" data-id="4820" style="width:120px;font-size:.75rem;">
+                            <option selected>Pending</option>
+                            <option>In Progress</option>
+                            <option>Resolved</option>
+                            <option>Rejected</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="action-btn btn-view-complaint" data-id="4820" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="action-btn btn-update-status" data-id="4820" title="Save Status"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="4820" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Row 3 -->
+                <tr data-status="resolved" data-category="infrastructure">
+                    <td><input type="checkbox" class="row-select" style="width:15px;height:15px;cursor:pointer;"></td>
+                    <td class="fw-600">#4819</td>
+                    <td><div class="d-flex align-items-center gap-2"><img src="https://i.pravatar.cc/40?img=5" style="width:28px;height:28px;border-radius:50%;" alt=""><span>Maria Lopez</span></div></td>
+                    <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Streetlight not working for weeks</td>
+                    <td>Infrastructure</td>
+                    <td><span class="badge-ocms" style="background:#f0fdf4;color:#166534;">Normal</span></td>
+                    <td>Jan 10, 2025</td>
+                    <td>
+                        <select class="form-select form-select-sm status-inline" data-id="4819" style="width:120px;font-size:.75rem;">
+                            <option>Pending</option>
+                            <option>In Progress</option>
+                            <option selected>Resolved</option>
+                            <option>Rejected</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="action-btn btn-view-complaint" data-id="4819" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="action-btn btn-update-status" data-id="4819" title="Save Status"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="4819" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Row 4 -->
+                <tr data-status="rejected" data-category="technical">
+                    <td><input type="checkbox" class="row-select" style="width:15px;height:15px;cursor:pointer;"></td>
+                    <td class="fw-600">#4818</td>
+                    <td><div class="d-flex align-items-center gap-2"><img src="https://i.pravatar.cc/40?img=7" style="width:28px;height:28px;border-radius:50%;" alt=""><span>David Lee</span></div></td>
+                    <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Internet service down in the area</td>
+                    <td>Technical</td>
+                    <td><span class="badge-ocms" style="background:#fee2e2;color:#991b1b;">Urgent</span></td>
+                    <td>Jan 09, 2025</td>
+                    <td>
+                        <select class="form-select form-select-sm status-inline" data-id="4818" style="width:120px;font-size:.75rem;">
+                            <option>Pending</option>
+                            <option>In Progress</option>
+                            <option>Resolved</option>
+                            <option selected>Rejected</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="action-btn btn-view-complaint" data-id="4818" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="action-btn btn-update-status" data-id="4818" title="Save Status"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="4818" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="admin-card-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <small class="text-muted" id="pagination-info">Showing 0–0 of 0 complaints</small>
+        <nav>
+            <ul class="pagination pagination-sm mb-0" id="pagination-controls" style="gap:4px;"></ul>
+        </nav>
+    </div>
+</div>
+<!-- View Detail Modal -->
+<div class="modal fade" id="detail-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:var(--radius-lg);border:none;">
+            <div class="modal-header border-0">
+                <h6 class="modal-title fw-700">Complaint Detail</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-0" id="detail-body">
+                <div class="text-center py-4"><i class="bi bi-arrow-repeat fs-4"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+
+               // ===== STATE =====
+        let currentPage = 1;
+        const pageSize = 10;
+
+        // ===== INIT =====
+        $(document).ready(function () {
+            loadCategories();
+            fetchComplaints();
+            bindEvents();
+        });
+
+        // ===== LOAD CATEGORIES =====
+        function loadCategories() {
+            OCMS.ajax({
+                url: '/Category/GetAll',
+                method: 'GET',
+                toastError: false,
+                onSuccess(data) {
+                    const select = $('#category-filter');
+                    (data || []).forEach(c => {
+                        select.append(`<option value="${c.categoryName}">${c.categoryName}</option>`);
+                    });
+                }
+            });
+        }
+
+        // ===== FETCH COMPLAINTS (from backend, with filters) =====
+        function fetchComplaints() {
+            const params = {
+                status: $('#status-filter').val() !== '' ? getStatusValue($('#status-filter').val()) : '',
+                categoryName: $('#category-filter').val(),
+                dateFrom: $('#date-from').val(),
+                search: $('#search-input').val().trim(),
+                page: currentPage,
+                pageSize: pageSize
+            };
+
+            OCMS.ajax({
+                url: '/Complaint/GetFiltered?' + $.param(params),
+                method: 'GET',
+                toastError: true,
+                onSuccess(data) {
+                    renderTable(data.items || []);
+                    renderPagination(data.totalCount, data.totalPages);
+                }
+            });
+        }
+
+        function getStatusValue(text) {
+            return { pending: 0, 'in progress': 1, resolved: 2, rejected: 3 }[text] ?? '';
+        }
+
+        // ===== RENDER TABLE =====
+        function renderTable(items) {
+            $('#row-count').text(items.length + ' records');
+
+            if (!items.length) {
+                $('#complaints-body').html(`
+                    <tr><td colspan="9" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-3 d-block mb-2"></i>No complaints found.
+                    </td></tr>`);
+                return;
+            }
+
+            const rows = items.map(c => `
+                <tr data-id="${c.complaintId}">
+                    <td><input type="checkbox" class="row-select" style="width:15px;height:15px;cursor:pointer;"></td>
+                    <td class="fw-600">${c.trackId}</td>
+                    <td>${c.submittedBy}</td>
+                    <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.title}</td>
+                    <td>${c.categoryName}</td>
+                    <td>${getPriorityBadge(c.priority)}</td>
+                    <td>${formatDate(c.submissionDate)}</td>
+                    <td>
+                        <select class="form-select form-select-sm status-inline" data-id="${c.complaintId}" style="width:120px;font-size:.75rem;">
+                            <option value="0" ${c.status === 0 ? 'selected' : ''}>Pending</option>
+                            <option value="1" ${c.status === 1 ? 'selected' : ''}>In Progress</option>
+                            <option value="2" ${c.status === 2 ? 'selected' : ''}>Resolved</option>
+                            <option value="3" ${c.status === 3 ? 'selected' : ''}>Rejected</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="action-btn btn-view-complaint" data-id="${c.complaintId}" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="action-btn btn-update-status" data-id="${c.complaintId}" title="Save Status"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="${c.complaintId}" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>`).join('');
+
+            $('#complaints-body').html(rows);
+        }
+
+        // ===== PAGINATION (server-driven) =====
+        function renderPagination(total, totalPages) {
+            const from = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+            const to = Math.min(currentPage * pageSize, total);
+            $('#pagination-info').text(`Showing ${from}–${to} of ${total} complaints`);
+
+            let html = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${currentPage - 1}" style="border-radius:6px;">&laquo;</a></li>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" data-page="${i}" style="border-radius:6px;${i === currentPage ? 'background:var(--primary);border-color:var(--primary);' : ''}">${i}</a></li>`;
+            }
+
+            html += `<li class="page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${currentPage + 1}" style="border-radius:6px;">&raquo;</a></li>`;
+
+            $('#pagination-controls').html(html);
+        }
+
+        // ===== EVENTS =====
+        function bindEvents() {
+
+            $('#apply-filters').on('click', function () {
+                currentPage = 1;
+                fetchComplaints();
+            });
+
+            $('#clear-filters').on('click', function () {
+                $('#status-filter, #category-filter, #date-from, #search-input').val('');
+                currentPage = 1;
+                fetchComplaints();
+            });
+
+            // Search box - Enter key ya live typing (debounced)
+            let searchTimer;
+            $('#search-input').on('input', function () {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    currentPage = 1;
+                    fetchComplaints();
+                }, 400);   // 400ms debounce - typing rukne ke baad hi request jayegi
+            });
+
+            $(document).on('click', '#pagination-controls .page-link', function (e) {
+                e.preventDefault();
+                const page = parseInt($(this).data('page'));
+                if (page < 1) return;
+                currentPage = page;
+                fetchComplaints();
+            });
+
+            $('#select-all').on('change', function () {
+                $('.row-select').prop('checked', $(this).is(':checked'));
+            });
+
+            // View detail
+            $(document).on('click', '.btn-view-complaint', function () {
+                const id = $(this).data('id');
+                const modal = new bootstrap.Modal(document.getElementById('detail-modal'));
+                modal.show();
+                $('#detail-body').html('<div class="text-center py-4"><i class="bi bi-arrow-repeat fs-4"></i></div>');
+
+                OCMS.ajax({
+                    url: `/Complaint/GetById?id=${id}`,
+                    method: 'GET',
+                    toastError: true,
+                    onSuccess(c) {
+                        $('#detail-body').html(`
+                            <div class="row g-3">
+                                <div class="col-sm-6"><small class="text-muted d-block">Track ID</small><strong>${c.trackId}</strong></div>
+                                <div class="col-sm-6"><small class="text-muted d-block">Status</small>${getStatusBadgeHtml(c.status)}</div>
+                                <div class="col-12"><small class="text-muted d-block">Title</small><strong>${c.title}</strong></div>
+                                <div class="col-sm-6"><small class="text-muted d-block">Category</small>${c.categoryName}</div>
+                                <div class="col-sm-6"><small class="text-muted d-block">Submitted By</small>${c.submittedBy}</div>
+                                <div class="col-12"><small class="text-muted d-block">Description</small><p class="mb-0" style="font-size:.9rem;">${c.description}</p></div>
+                                <div class="col-sm-6"><small class="text-muted d-block">Date Submitted</small>${formatDate(c.submissionDate)}</div>
+                                ${c.imagePath ? `<div class="col-12"><small class="text-muted d-block mb-2">Evidence</small><img src="${c.imagePath}" class="img-fluid rounded" style="max-height:250px;object-fit:cover;"></div>` : ''}
+                            </div>`);
+                    }
+                });
+            });
+
+            // Update status
+            $(document).on('click', '.btn-update-status', async function () {
+                const $btn = $(this);
+                const id = $btn.data('id');
+                const status = $(`.status-inline[data-id="${id}"]`).val();
+
+                const confirmed = await OCMS.Confirm.show({
+                    title: 'Update Status',
+                    text: 'Change this complaint\'s status?',
+                    icon: '🔄',
+                    confirmText: 'Yes, Update',
+                    type: 'primary'
+                });
+                if (!confirmed) return;
+
+                OCMS.ajax({
+                    url: `/Complaint/UpdateStatus?id=${id}&status=${status}`,
+                    method: 'PUT',
+                    $btn,
+                    onSuccess() { fetchComplaints(); }
+                });
+            });
+
+            // Delete
+            $(document).on('click', '.btn-delete-complaint', async function () {
+                const $btn = $(this);
+                const id = $btn.data('id');
+
+                const confirmed = await OCMS.Confirm.show({
+                    title: 'Delete Complaint',
+                    text: 'Permanently delete this complaint? This cannot be undone.',
+                    icon: '🗑️',
+                    confirmText: 'Delete',
+                    type: 'danger'
+                });
+                if (!confirmed) return;
+
+                OCMS.ajax({
+                    url: `/Complaint/Delete?id=${id}`,
+                    method: 'DELETE',
+                    $btn,
+                    onSuccess() { fetchComplaints(); }
+                });
+            });
+
+            // Bulk actions
+            $('#bulk-apply').on('click', async function () {
+                const action = $('#bulk-action').val();
+                const ids = $('.row-select:checked').closest('tr').map(function () {
+                    return $(this).data('id');
+                }).get();
+
+                if (!action) { OCMS.Toast.warning('Select an action', 'Please choose a bulk action first.'); return; }
+                if (!ids.length) { OCMS.Toast.warning('No rows selected', 'Please select at least one complaint.'); return; }
+
+                const confirmed = await OCMS.Confirm.show({
+                    title: 'Bulk Action',
+                    text: `Apply "${action}" to ${ids.length} selected complaint(s)?`,
+                    icon: '⚠️',
+                    confirmText: 'Confirm',
+                    type: action === 'delete' ? 'danger' : 'primary'
+                });
+                if (!confirmed) return;
+
+                for (const id of ids) {
+                    if (action === 'delete') {
+                        await $.ajax({ url: `/Complaint/Delete?id=${id}`, type: 'DELETE' });
+                    } else {
+                        const statusVal = action === 'resolve' ? 2 : 3;
+                        await $.ajax({ url: `/Complaint/UpdateStatus?id=${id}&status=${statusVal}`, type: 'PUT' });
+                    }
+                }
+
+                OCMS.Toast.success('Done', 'Bulk action applied successfully.');
+                fetchComplaints();
+            });
+
+            // Export CSV (current page ka data; poora export chahiye to alag endpoint chahiye)
+            $('#export-btn').on('click', function () {
+                OCMS.Toast.info('Note', 'Exporting current view. For full export, a dedicated endpoint would be needed.');
+            });
+        }
+
+        // ===== HELPERS =====
+        function getStatusBadgeHtml(status) {
+            const map = { 0: ['#fef3c7', '#92400e'], 1: ['#dbeafe', '#1e40af'], 2: ['#dcfce7', '#166534'], 3: ['#fee2e2', '#991b1b'] };
+            const labels = { 0: 'Pending', 1: 'In Progress', 2: 'Resolved', 3: 'Rejected' };
+            const [bg, color] = map[status] || ['#e2e8f0', '#334155'];
+            return `<span class="badge-ocms" style="background:${bg};color:${color};">${labels[status] || 'Unknown'}</span>`;
+        }
+
+        function getPriorityBadge(priority) {
+            const p = (priority || 'normal').toLowerCase();
+            if (p === 'urgent') return '<span class="badge-ocms" style="background:#fee2e2;color:#991b1b;">Urgent</span>';
+            if (p === 'low') return '<span class="badge-ocms" style="background:#f1f5f9;color:#475569;">Low</span>';
+            return '<span class="badge-ocms" style="background:#f0fdf4;color:#166534;">Normal</span>';
+        }
+
+        function formatDate(isoString) {
+            if (!isoString) return '—';
+            const d = new Date(isoString);
+            return d.getDate() + ' ' + d.toLocaleString('en', { month: 'short' }) + ' ' + d.getFullYear();
+        }
+    </script>
+}

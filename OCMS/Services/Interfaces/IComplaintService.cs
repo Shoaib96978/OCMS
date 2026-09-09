@@ -7,6 +7,7 @@ namespace OCMS.Services.Interfaces
     {
         Task<AppResponse> SubmitAsync(AddComplaintDto dto, Guid userId);
         Task<AppResponse> GetAllAsync();
+        Task<AppResponse> GetFilteredAsync(ComplaintFilterDto dto);
         Task<AppResponse> GetByUserIdAsync(Guid userId);
         Task<AppResponse> GetByTrackIdAsync(string trackId);
         Task<AppResponse> GetByIdAsync(Guid complaintId);
