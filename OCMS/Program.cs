@@ -64,6 +64,8 @@ namespace OCMS
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IContactService, ContactService>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
+
 
 
             var app = builder.Build();

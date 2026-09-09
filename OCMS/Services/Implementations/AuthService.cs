@@ -109,7 +109,7 @@ namespace OCMS.Services.Implementations
             await _userRepo.UpdateAsync(user);
             await _userRepo.SaveChangesAsync();
             var redirectUrl = roleName == AppRoles.Admin.ToString()
-                ? "/AdminDashboard/Index"
+                ? "/Admin/Index"
                 : "/Home/Index";
 
             return AppResponse.Ok("Login successful! Welcome back.",

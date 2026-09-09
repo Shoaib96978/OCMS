@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OCMS.DTOs.User;
+using OCMS.Entities;
 using OCMS.Services.Interfaces;
+using OCMS.Shared.Enums;
 using OCMS.Shared.Helpers;
 
 namespace OCMS.Controllers
@@ -21,6 +23,19 @@ namespace OCMS.Controllers
         public IActionResult AccessDenied() => View();
 
         // ====== Actions ======
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Guid id)
+           => Json(await _userService.DeleteUserAsync(id));
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+           => Json(await _userService.GetAllUsersAsync());
+
+        [HttpGet]
+        public async Task<IActionResult> GetById(Guid id)
+            => Json(await _userService.GetProfileAsync(id));
+        [HttpPut]
+        public async Task<IActionResult> ToggleStatus(Guid id)
+            => Json(await _userService.ToggleStatusAsync(id));
         [HttpGet]
         public async Task<IActionResult> GetProfile()
         {
@@ -47,6 +62,12 @@ namespace OCMS.Controllers
         {
             var userId = ClaimsHelper.GetUserId(User);
             return Json(await _userService.UploadImageAsync(userId, imageFile));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserByRole(AppRoles role)
+        {
+            return Ok();
         }
     }
 }

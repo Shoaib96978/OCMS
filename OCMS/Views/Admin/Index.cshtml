@@ -1,0 +1,191 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h4>Dashboard</h4>
+    <p>Welcome back, Admin. Here's what's happening today.</p>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card" style="--stat-color:#dbeafe;--stat-icon-color:#1a56db;">
+            <div class="stat-icon"><i class="bi bi-clipboard2-list"></i></div>
+            <div id="total-complaints" class="stat-val">248</div>
+            <div class="stat-lbl">Total Complaints</div>
+            <div class="stat-diff up"><i class="bi bi-arrow-up"></i> +12 this week</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card" style="--stat-color:#fef3c7;--stat-icon-color:#d97706;">
+            <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+            <div id="pending-complaints" class="stat-val">42</div>
+            <div class="stat-lbl">Pending</div>
+            <div class="stat-diff down"><i class="bi bi-arrow-down"></i> -3 from yesterday</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card" style="--stat-color:#dcfce7;--stat-icon-color:#16a34a;">
+            <div class="stat-icon"><i class="bi bi-patch-check"></i></div>
+            <div id="resolved-complaints" class="stat-val">189</div>
+            <div class="stat-lbl">Resolved</div>
+            <div class="stat-diff up"><i class="bi bi-arrow-up"></i> +8 today</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card" style="--stat-color:#f3e8ff;--stat-icon-color:#7c3aed;">
+            <div class="stat-icon"><i class="bi bi-people"></i></div>
+            <div id="total-users" class="stat-val">1,204</div>
+            <div class="stat-lbl">Total Users</div>
+            <div class="stat-diff up"><i class="bi bi-arrow-up"></i> +24 this month</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Complaints -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h6 class="mb-0">Recent Complaints</h6>
+        <a href="complaints.html" class="ms-auto btn-outline-ocms" style="font-size:.78rem;padding:5px 14px;">View All</a>
+    </div>
+    <div class="table-responsive">
+        <table class="ocms-table" id="complaints-table">
+            <thead>
+                <tr>
+                    <th>#ID</th>
+                    <th>User</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-600">#4821</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="https://i.pravatar.cc/40?img=1" style="width:30px;height:30px;border-radius:50%;" alt="">
+                            <span>Sarah Johnson</span>
+                        </div>
+                    </td>
+                    <td>Water supply interrupted</td>
+                    <td>Service</td>
+                    <td>Jan 12, 2025</td>
+                    <td><span class="badge-ocms badge-progress">In Progress</span></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <select id="status-select-4821" class="form-select form-select-sm" style="width:120px;font-size:.75rem;">
+                                <option>Pending</option>
+                                <option selected>In Progress</option>
+                                <option>Resolved</option>
+                                <option>Rejected</option>
+                            </select>
+                            <button class="action-btn btn-update-status" data-id="4821" title="Update"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="4821" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-600">#4820</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="https://i.pravatar.cc/40?img=3" style="width:30px;height:30px;border-radius:50%;" alt="">
+                            <span>Ahmed Khan</span>
+                        </div>
+                    </td>
+                    <td>Overcharged for electricity bill</td>
+                    <td>Billing</td>
+                    <td>Jan 11, 2025</td>
+                    <td><span class="badge-ocms badge-pending">Pending</span></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <select id="status-select-4820" class="form-select form-select-sm" style="width:120px;font-size:.75rem;">
+                                <option selected>Pending</option>
+                                <option>In Progress</option>
+                                <option>Resolved</option>
+                                <option>Rejected</option>
+                            </select>
+                            <button class="action-btn btn-update-status" data-id="4820" title="Update"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="4820" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-600">#4819</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="https://i.pravatar.cc/40?img=5" style="width:30px;height:30px;border-radius:50%;" alt="">
+                            <span>Maria Lopez</span>
+                        </div>
+                    </td>
+                    <td>Streetlight not working for weeks</td>
+                    <td>Infrastructure</td>
+                    <td>Jan 10, 2025</td>
+                    <td><span class="badge-ocms badge-resolved">Resolved</span></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <select id="status-select-4819" class="form-select form-select-sm" style="width:120px;font-size:.75rem;">
+                                <option>Pending</option>
+                                <option>In Progress</option>
+                                <option selected>Resolved</option>
+                                <option>Rejected</option>
+                            </select>
+                            <button class="action-btn btn-update-status" data-id="4819" title="Update"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="4819" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-600">#4818</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="https://i.pravatar.cc/40?img=7" style="width:30px;height:30px;border-radius:50%;" alt="">
+                            <span>David Lee</span>
+                        </div>
+                    </td>
+                    <td>Internet service down in area</td>
+                    <td>Technical</td>
+                    <td>Jan 09, 2025</td>
+                    <td><span class="badge-ocms badge-rejected">Rejected</span></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <select id="status-select-4818" class="form-select form-select-sm" style="width:120px;font-size:.75rem;">
+                                <option>Pending</option>
+                                <option>In Progress</option>
+                                <option>Resolved</option>
+                                <option selected>Rejected</option>
+                            </select>
+                            <button class="action-btn btn-update-status" data-id="4818" title="Update"><i class="bi bi-check2"></i></button>
+                            <button class="action-btn danger btn-delete-complaint" data-id="4818" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+    $(document).ready(function(){
+            LoadDashBoard();
+    });
+
+    function LoadDashBoard()
+    {
+            $.get("/Admin/GetStats",function(res){
+            // Update stat cards
+            $("#total-complaints").text(res.data.totalComplaints);
+            $("#pending-complaints").text(res.data.pendingComplaints);
+            $("#resolved-complaints").text(res.data.resolvedComplaints);
+            $("#total-users").text(res.data.totalUsers);
+            });
+    }
+
+    </script>
+}

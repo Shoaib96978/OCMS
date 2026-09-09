@@ -30,6 +30,30 @@ namespace OCMS.Repositories
             => filter == null
                 ? await _dbSet.CountAsync()
                 : await _dbSet.CountAsync(filter);
+        public async Task<IEnumerable<T>> GetPagedWithIncludeAsync(int pageNumber,
+                                                                   int pageSize,
+                                                                   Expression<Func<T, bool>>? filter,
+                                                                   Expression<Func<T, object>>? orderBy,
+                                                                   bool isDescending,
+                                                                   params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+
+            foreach (var include in includes)
+                query = query.Include(include);
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            if (orderBy != null)
+                query = isDescending ? query.OrderByDescending(orderBy) : query.OrderBy(orderBy);
+
+            return await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
         // ===================== GET WITH INCLUDE =====================
 

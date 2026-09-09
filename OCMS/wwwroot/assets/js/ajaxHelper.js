@@ -41,6 +41,43 @@ const OCMS = (function ($) {
             if (this._resolve) { this._resolve(result); this._resolve = null; }
         }
     };
+    function ShowConfirmModal(message, onConfirm) {
+        const existing = document.getElementById('adminConfirmModal');
+        if (existing) existing.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'adminConfirmModal';
+        modal.innerHTML = `
+        <div class="modal fade" id="confirmModalBS" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius:12px; border:none;">
+                    <div class="modal-body text-center p-4">
+                        <i class="fas fa-triangle-exclamation fa-2x text-warning mb-3"></i>
+                        <p class="mb-4" style="font-size:0.95rem;">${message}</p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button class="btn btn-danger" id="confirmBtn">
+                                Yes, Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        document.body.appendChild(modal);
+
+        const bsModal = new bootstrap.Modal(
+            document.getElementById('confirmModalBS'));
+        bsModal.show();
+
+        document.getElementById('confirmBtn').onclick = function () {
+            bsModal.hide();
+            onConfirm();
+        };
+    }
 
 
     function ajaxPost(url, data, buttonEl = null, onSuccess = null) {

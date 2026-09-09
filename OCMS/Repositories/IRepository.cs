@@ -12,6 +12,13 @@ namespace OCMS.Repositories
         Task<bool> ExistsAsync(Expression<Func<T, bool>> filter);
         Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
         Task<int> CountAsync();
+        Task<IEnumerable<T>> GetPagedWithIncludeAsync(
+                             int pageNumber,
+                             int pageSize,
+                             Expression<Func<T, bool>>? filter,
+                             Expression<Func<T, object>>? orderBy,
+                             bool isDescending,
+                             params Expression<Func<T, object>>[] includes);
         // ===================== GET WITH INCLUDE =====================
         Task<IEnumerable<T>> GetAllWithIncludeAsync(
             params Expression<Func<T, object>>[] includes);
