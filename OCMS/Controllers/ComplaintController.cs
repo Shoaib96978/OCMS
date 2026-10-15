@@ -18,7 +18,9 @@ namespace OCMS.Controllers
 
         // ====== Pages (GET) ======
         [HttpGet] public IActionResult Index() => View();
+        [AllowAnonymous]
         [HttpGet] public IActionResult Submit() => View();
+        [AllowAnonymous]
         [HttpGet] public IActionResult Track() => View();
 
         // ====== Actions ======
@@ -29,6 +31,12 @@ namespace OCMS.Controllers
             return Json(await _complaintService.SubmitAsync(dto, userId));
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> TrackById(string trackId)
+            => Json(await _complaintService.GetByTrackIdAsync(trackId));
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
             => Json(await _complaintService.GetAllAsync());
@@ -40,19 +48,20 @@ namespace OCMS.Controllers
             return Json(await _complaintService.GetByUserIdAsync(userId));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> TrackById(string trackId)
-            => Json(await _complaintService.GetByTrackIdAsync(trackId));
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetById(Guid id)
                                          => Json(await _complaintService.GetByIdAsync(id));
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetFiltered([FromQuery] ComplaintFilterDto dto)
                                          => Json(await _complaintService.GetFilteredAsync(dto));
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateStatus(Guid id, int status)
                                          => Json(await _complaintService.UpdateStatusAsync(id, status));
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
                                          => Json(await _complaintService.DeleteAsync(id));

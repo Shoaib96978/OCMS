@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OCMS.DTOs.Auth;
+using OCMS.DTOs.User;
 using OCMS.Entities;
 using OCMS.Mappers.Auth;
 using OCMS.Repositories;
@@ -48,7 +49,7 @@ namespace OCMS.Services.Implementations
 
         // ===================== LOGIN =====================
         public async Task<AppResponse> LoginAsync(LoginDto dto)
-        {
+           {
             var user = await _userRepo.GetFirstOrDefaultAsync(
                 u => u.Email.ToLower() == dto.Email.ToLower());
 
@@ -184,6 +185,60 @@ namespace OCMS.Services.Implementations
                 ? AppResponse.Ok("Password updated successfully! Please login.", redirectUrl: "/Auth/LoginPage")
                 : AppResponse.Fail("Internal Server Error");
         }
+        // ===================== ADD USER (BY ADMIN) =====================
+        public async Task<AppResponse> AddUserByAdminAsync(AddUserByAdminDto dto)
+        {
+            if (!Enum.IsDefined(typeof(AppRoles), dto.Role))
+                return AppResponse.Fail("Invalid role.");
+
+            if (dto.Role == (int)AppRoles.Admin)
+            {
+                var currentUser = _http.HttpContext?.User;
+                if (currentUser == null || !ClaimsHelper.IsAdmin(currentUser))
+                    return AppResponse.Fail("Only admins can add an Admin.");
+
+                if (string.IsNullOrWhiteSpace(dto.CurrentAdminPassword))
+                    return AppResponse.Fail("Please confirm your admin password to add an Admin.");
+
+                var currentAdminId = ClaimsHelper.GetUserId(currentUser);
+                if (currentAdminId == Guid.Empty)
+                    return AppResponse.Fail("Unable to verify the current admin.");
+
+                var currentAdminCred = await _credRepo.GetFirstOrDefaultAsync(c => c.UserId == currentAdminId);
+                if (currentAdminCred == null ||
+                    !PasswordServices.VerifyPassword(dto.CurrentAdminPassword, currentAdminCred.PasswordHash, currentAdminCred.PasswordSalt))
+                {
+                    return AppResponse.Fail("Your admin password is incorrect.");
+                }
+            }
+
+            // Duplicate email check
+            var existing = await _userRepo.GetFirstOrDefaultAsync(u => u.Email.ToLower() == dto.Email.ToLower());
+            if (existing != null)
+                return AppResponse.Fail("This email is already registered.");
+
+            var user = new User
+            {
+                UserId = Guid.NewGuid(),
+                FullName = dto.FullName,
+                Email = dto.Email,
+                Status = UserStatus.Active,
+                CreatedDate = DateTime.UtcNow,
+                ImageLink = string.Empty
+            };
+
+            await _userRepo.AddAsync(user);
+            await _credRepo.AddAsync(user.AssignCredentials(dto.Password));
+            await _roleRepo.AddAsync(new UserRole
+            {
+                UserRoleId = Guid.NewGuid(),
+                UserId = user.UserId,
+                Role = (AppRoles)dto.Role
+            });
+
+            return await _userRepo.SaveChangesAsync() > 0
+                ? AppResponse.Ok("User added successfully.")
+                : AppResponse.Fail("Internal Server Error");
+        }
     }
 }
-

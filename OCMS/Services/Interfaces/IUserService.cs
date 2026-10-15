@@ -15,5 +15,8 @@ namespace OCMS.Services.Interfaces
         Task<AppResponse> GetAllUsersAsync();
         Task<AppResponse> ToggleStatusAsync(Guid userId);
         Task<AppResponse> DeleteUserAsync(Guid userId);
+        Task<AppResponse> GetFilteredAsync(UserFilterDto dto);
+        Task<AppResponse> UpdateStatusAsync(Guid id, int status);
+        Task<AppResponse> GetStatsAsync();
     }
 }

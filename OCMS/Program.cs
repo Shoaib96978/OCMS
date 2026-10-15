@@ -14,6 +14,15 @@ namespace OCMS
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            options.AddPolicy("AllowReactDev", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173");
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+            })
+            );
+
             builder.Services.AddDbContext<AppDbContext>(option =>
             option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             // Add services to the container.
@@ -24,7 +33,7 @@ namespace OCMS
                 {
                     options.LoginPath = "/Auth/LoginPage";
                     options.LogoutPath = "/Auth/Logout";
-                    options.AccessDeniedPath = "/Auth/AccessDenied";
+                    options.AccessDeniedPath = "/User/AccessDenied";
                     options.ExpireTimeSpan = TimeSpan.FromHours(8);
                     options.SlidingExpiration = true;
 
@@ -67,7 +76,6 @@ namespace OCMS
             builder.Services.AddScoped<IAdminService, AdminService>();
 
 
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -80,7 +88,7 @@ namespace OCMS
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseCors("AllowReactDev");
             app.UseRouting();
             app.UseSession();
             app.UseAuthentication();

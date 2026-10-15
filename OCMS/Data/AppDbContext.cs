@@ -23,6 +23,13 @@ namespace OCMS.Data
                          new Category { CategoryId = 5, CategoryName = "Technical Support" },
                          new Category { CategoryId = 6, CategoryName = "Garbage Collection" }
                          );
+
+
+            modelBuilder.Entity<Complaint>()
+                .HasIndex(c => c.Status);
+
+            modelBuilder.Entity<Complaint>()
+                .HasIndex(c => c.TrackId);
         }
 
     }
