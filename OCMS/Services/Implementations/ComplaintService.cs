@@ -50,13 +50,12 @@ namespace OCMS.Services.Implementations
         public async Task<AppResponse> GetFilteredAsync(ComplaintFilterDto dto)
         {
             Expression<Func<Complaint, bool>> filter = c =>
-                (dto.Status == null || (int)c.Status == dto.Status) &&
-                (string.IsNullOrEmpty(dto.CategoryName) || c.Category!.CategoryName == dto.CategoryName) &&
-                (dto.DateFrom == null || c.SubmissionDate >= dto.DateFrom) &&
-                (string.IsNullOrEmpty(dto.Search) ||
-                    c.Title.Contains(dto.Search) ||
-                    c.TrackId.Contains(dto.Search) ||
-                    c.User!.FullName.Contains(dto.Search));
+                      (dto.Status == null || (int)c.Status == dto.Status) &&
+                      (string.IsNullOrEmpty(dto.CategoryName) || c.Category!.CategoryName == dto.CategoryName) &&
+                      (string.IsNullOrEmpty(dto.Search) ||
+                          c.TrackId.Contains(dto.Search) ||
+                          c.Title.Contains(dto.Search) ||
+                          c.User!.FullName.Contains(dto.Search));
 
             var totalCount = await _complaintRepo.CountAsync(filter);
 

@@ -48,122 +48,15 @@
 <div class="admin-card">
     <div class="admin-card-header">
         <h6 class="mb-0">Recent Complaints</h6>
-        <a href="complaints.html" class="ms-auto btn-outline-ocms" style="font-size:.78rem;padding:5px 14px;">View All</a>
+        <a href="@Url.Action("Complaints", "Admin")" class="ms-auto btn-outline-ocms" style="font-size:.78rem;padding:5px 14px;">View All</a>
     </div>
     <div class="table-responsive">
-        <table class="ocms-table" id="complaints-table">
+        <table class="ocms-table">
             <thead>
-                <tr>
-                    <th>#ID</th>
-                    <th>User</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
+                <tr><th>#ID</th><th>User</th><th>Title</th><th>Category</th><th>Date</th><th>Status</th></tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td class="fw-600">#4821</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <img src="https://i.pravatar.cc/40?img=1" style="width:30px;height:30px;border-radius:50%;" alt="">
-                            <span>Sarah Johnson</span>
-                        </div>
-                    </td>
-                    <td>Water supply interrupted</td>
-                    <td>Service</td>
-                    <td>Jan 12, 2025</td>
-                    <td><span class="badge-ocms badge-progress">In Progress</span></td>
-                    <td>
-                        <div class="d-flex gap-1">
-                            <select id="status-select-4821" class="form-select form-select-sm" style="width:120px;font-size:.75rem;">
-                                <option>Pending</option>
-                                <option selected>In Progress</option>
-                                <option>Resolved</option>
-                                <option>Rejected</option>
-                            </select>
-                            <button class="action-btn btn-update-status" data-id="4821" title="Update"><i class="bi bi-check2"></i></button>
-                            <button class="action-btn danger btn-delete-complaint" data-id="4821" title="Delete"><i class="bi bi-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="fw-600">#4820</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <img src="https://i.pravatar.cc/40?img=3" style="width:30px;height:30px;border-radius:50%;" alt="">
-                            <span>Ahmed Khan</span>
-                        </div>
-                    </td>
-                    <td>Overcharged for electricity bill</td>
-                    <td>Billing</td>
-                    <td>Jan 11, 2025</td>
-                    <td><span class="badge-ocms badge-pending">Pending</span></td>
-                    <td>
-                        <div class="d-flex gap-1">
-                            <select id="status-select-4820" class="form-select form-select-sm" style="width:120px;font-size:.75rem;">
-                                <option selected>Pending</option>
-                                <option>In Progress</option>
-                                <option>Resolved</option>
-                                <option>Rejected</option>
-                            </select>
-                            <button class="action-btn btn-update-status" data-id="4820" title="Update"><i class="bi bi-check2"></i></button>
-                            <button class="action-btn danger btn-delete-complaint" data-id="4820" title="Delete"><i class="bi bi-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="fw-600">#4819</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <img src="https://i.pravatar.cc/40?img=5" style="width:30px;height:30px;border-radius:50%;" alt="">
-                            <span>Maria Lopez</span>
-                        </div>
-                    </td>
-                    <td>Streetlight not working for weeks</td>
-                    <td>Infrastructure</td>
-                    <td>Jan 10, 2025</td>
-                    <td><span class="badge-ocms badge-resolved">Resolved</span></td>
-                    <td>
-                        <div class="d-flex gap-1">
-                            <select id="status-select-4819" class="form-select form-select-sm" style="width:120px;font-size:.75rem;">
-                                <option>Pending</option>
-                                <option>In Progress</option>
-                                <option selected>Resolved</option>
-                                <option>Rejected</option>
-                            </select>
-                            <button class="action-btn btn-update-status" data-id="4819" title="Update"><i class="bi bi-check2"></i></button>
-                            <button class="action-btn danger btn-delete-complaint" data-id="4819" title="Delete"><i class="bi bi-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="fw-600">#4818</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <img src="https://i.pravatar.cc/40?img=7" style="width:30px;height:30px;border-radius:50%;" alt="">
-                            <span>David Lee</span>
-                        </div>
-                    </td>
-                    <td>Internet service down in area</td>
-                    <td>Technical</td>
-                    <td>Jan 09, 2025</td>
-                    <td><span class="badge-ocms badge-rejected">Rejected</span></td>
-                    <td>
-                        <div class="d-flex gap-1">
-                            <select id="status-select-4818" class="form-select form-select-sm" style="width:120px;font-size:.75rem;">
-                                <option>Pending</option>
-                                <option>In Progress</option>
-                                <option>Resolved</option>
-                                <option selected>Rejected</option>
-                            </select>
-                            <button class="action-btn btn-update-status" data-id="4818" title="Update"><i class="bi bi-check2"></i></button>
-                            <button class="action-btn danger btn-delete-complaint" data-id="4818" title="Delete"><i class="bi bi-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>
+            <tbody id="recent-complaints-body">
+                <tr><td colspan="6" class="text-center py-4"><i class="bi bi-arrow-repeat"></i></td></tr>
             </tbody>
         </table>
     </div>
@@ -171,21 +64,53 @@
 
 @section Scripts {
     <script>
-
-    $(document).ready(function(){
+        $(document).ready(function () {
             LoadDashBoard();
-    });
+            LoadRecentComplaints();
+        });
 
-    function LoadDashBoard()
-    {
-            $.get("/Admin/GetStats",function(res){
-            // Update stat cards
-            $("#total-complaints").text(res.data.totalComplaints);
-            $("#pending-complaints").text(res.data.pendingComplaints);
-            $("#resolved-complaints").text(res.data.resolvedComplaints);
-            $("#total-users").text(res.data.totalUsers);
+        function LoadDashBoard() {
+            OCMS.ajax({
+                url: '/Admin/GetStats',
+                method: 'GET',
+                toastSuccess: false,
+                onSuccess(data) {
+                    $('#total-complaints').text(data.totalComplaints);
+                    $('#pending-complaints').text(data.pendingComplaints);
+                    $('#resolved-complaints').text(data.resolvedComplaints);
+                    $('#total-users').text(data.totalUsers);
+                }
             });
-    }
+        }
+
+        function LoadRecentComplaints() {
+            OCMS.ajax({
+                url: '/Complaint/GetFiltered?page=1&pageSize=5',
+                method: 'GET',
+                toastSuccess: false,
+                onSuccess(data) {
+                    const items = data.items || [];
+                    if (!items.length) {
+                        $('#recent-complaints-body').html('<tr><td colspan="6" class="text-center text-muted py-4">No complaints yet.</td></tr>');
+                        return;
+                    }
+                    const labels = { 0: ['Pending', 'badge-pending'], 1: ['In Progress', 'badge-progress'], 2: ['Resolved', 'badge-resolved'], 3: ['Rejected', 'badge-rejected'] };
+                    const rows = items.map(c => {
+                        const [text, cls] = labels[c.status] || ['Unknown', ''];
+                        return `
+                            <tr>
+                                <td class="fw-600">${c.trackId}</td>
+                                <td>${c.submittedBy}</td>
+                                <td>${c.title}</td>
+                                <td>${c.categoryName}</td>
+                                <td>${new Date(c.submissionDate).toLocaleDateString('en-GB')}</td>
+                                <td><span class="badge-ocms ${cls}">${text}</span></td>
+                            </tr>`;
+                    }).join('');
+                    $('#recent-complaints-body').html(rows);
+                }
+            });
+        }
 
     </script>
 }

@@ -108,6 +108,10 @@ namespace OCMS.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TrackId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Complaints");

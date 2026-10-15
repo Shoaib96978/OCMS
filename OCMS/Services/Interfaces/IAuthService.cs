@@ -1,4 +1,5 @@
 ﻿using OCMS.DTOs.Auth;
+using OCMS.DTOs.User;
 using OCMS.Shared;
 
 namespace OCMS.Services.Interfaces
@@ -9,5 +10,6 @@ namespace OCMS.Services.Interfaces
         Task<AppResponse> LoginAsync(LoginDto dto);
         Task<AppResponse> ForgotPasswordAsync(ForgotPasswordDto dto);
         Task<AppResponse> ResetPasswordAsync(ResetPasswordDto dto);
+        Task<AppResponse> AddUserByAdminAsync(AddUserByAdminDto dto);
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OCMS.DTOs.Auth;
+using OCMS.DTOs.User;
 using OCMS.Services.Interfaces;
 
 namespace OCMS.Controllers
@@ -16,11 +18,15 @@ namespace OCMS.Controllers
         [HttpGet] public IActionResult ResetPasswordPage() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromForm] RegisterDto dto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
             => Json(await _authService.RegisterAsync(dto));
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddUser([FromBody] AddUserByAdminDto dto)
+                     => Json(await _authService.AddUserByAdminAsync(dto));
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromForm] LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
                                             => Json(await _authService.LoginAsync(dto));
         [HttpGet]
         public async Task<IActionResult> Logout()

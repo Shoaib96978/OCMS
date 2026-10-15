@@ -1138,6 +1138,43 @@ ul {
     }
 
 /* ============================================================
+   SKELETON LOADER (reusable across pages)
+   ============================================================ */
+.skeleton {
+    background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+    background-size: 200% 100%;
+    animation: skeletonPulse 1.4s ease infinite;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+@keyframes skeletonPulse {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-cell {
+    height: 14px;
+    width: 80%;
+    margin: 2px auto;
+}
+
+    .skeleton-cell.short {
+        width: 50%;
+    }
+
+    .skeleton-cell.badge {
+        width: 70px;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+/* ============================================================
    PROFILE PAGE
    ============================================================ */
 .profile-avatar-wrapper {

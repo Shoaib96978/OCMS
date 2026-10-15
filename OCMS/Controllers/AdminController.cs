@@ -5,7 +5,7 @@ using OCMS.Shared.Helpers;
 
 namespace OCMS.Controllers
 {
-    //[Authorize(Roles = AppRoles.Admin)]
+    [Authorize(Roles = "Admin")]
     public class AdminController(IAdminService adminService) : Controller
     {
         private readonly IAdminService _adminService = adminService;

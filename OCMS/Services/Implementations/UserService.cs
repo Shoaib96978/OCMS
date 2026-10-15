@@ -1,11 +1,12 @@
 ﻿using OCMS.DTOs.User;
-using OCMS.Mappers.Auth;
 using OCMS.Entities;
+using OCMS.Mappers.Auth;
 using OCMS.Repositories;
 using OCMS.Services.Interfaces;
 using OCMS.Shared;
 using OCMS.Shared.Enums;
 using OCMS.Shared.Helpers;
+using System.Linq.Expressions;
 
 namespace OCMS.Services.Implementations;
 
@@ -151,5 +152,57 @@ public class UserService(
         await _userRepo.DeleteByEntityAsync(user);
         await _userRepo.SaveChangesAsync();
         return AppResponse.Ok("User deleted successfully.");
+    }
+    public async Task<AppResponse> GetFilteredAsync(UserFilterDto dto)
+    {
+        Expression<Func<User, bool>> filter = u =>
+            (dto.Status == null || (int)u.Status == dto.Status) &&
+            (dto.Role == null || u.UserRoles.Any(r => (int)r.Role == dto.Role)) &&
+            (string.IsNullOrEmpty(dto.Search) ||
+                u.FullName.Contains(dto.Search) ||
+                u.Email.Contains(dto.Search));
+
+        var totalCount = await _userRepo.CountAsync(filter);
+
+        var users = await _userRepo.GetPagedWithIncludeAsync(
+            dto.Page,
+            dto.PageSize,
+            filter,
+            orderBy: u => u.CreatedDate,
+            isDescending: true,
+            includes: [u => u.UserRoles, u => u.Complaints]
+        );
+
+        var mapped = users.MapToGetAllUserDto();
+
+        return AppResponse.Ok("Users fetched.", data: new
+        {
+            items = mapped,
+            totalCount,
+            totalPages = (int)Math.Ceiling(totalCount / (double)dto.PageSize),
+            page = dto.Page
+        });
+    }
+
+    public async Task<AppResponse> UpdateStatusAsync(Guid id, int status)
+    {
+        var user = await _userRepo.GetByIdAsync(id);
+        if (user == null) return AppResponse.Fail("User not found.");
+
+        user.Status = (UserStatus)status;
+        await _userRepo.UpdateAsync(user);
+
+        return await _userRepo.SaveChangesAsync() > 0
+            ? AppResponse.Ok("User status updated.")
+            : AppResponse.Fail("Internal Server Error");
+    }
+    public async Task<AppResponse> GetStatsAsync()
+    {
+        var total = await _userRepo.CountAsync();
+        var active = await _userRepo.CountAsync(u => u.Status == UserStatus.Active);
+        var blocked = await _userRepo.CountAsync(u => u.Status == UserStatus.Blocked);
+        var admins = await _userRepo.CountAsync(u => u.UserRoles.Any(r => r.Role == AppRoles.Admin));
+
+        return AppResponse.Ok("Stats fetched.", data: new UserStatsDto(total, active, blocked, admins));
     }
 }
